@@ -1,0 +1,113 @@
+\ProvidesPackage{alttex}
+
+\RequirePackage{exscale} % For huge math
+
+\catcode`\•=\active
+\catcode`\‣=\active
+% Make () \right and \left
+\makeatletter
+\def\resetMathstrut@{%
+  \setbox\z@\hbox{%
+    \mathchardef\@tempa\mathcode`\[\relax
+    \def\@tempb##1"##2##3{\the\textfont"##3\char"}%
+    \expandafter\@tempb\meaning\@tempa \relax
+  }%
+  \ht\Mathstrutbox@\ht\z@ \dp\Mathstrutbox@\dp\z@
+}
+\makeatother
+
+\edef\oldbraces{
+  \mathcode`(\the\mathcode`(
+  \mathcode`)\the\mathcode`)
+}
+\begingroup
+  \catcode`(\active \xdef({\left\string(}
+  \catcode`)\active \xdef){\right\string)}
+\endgroup
+\def\newbraces{
+
+  \mathcode`("8000
+  \mathcode`)"8000
+}
+
+\newcounter{itemi}
+\setcounter{itemi}{0}
+
+\def•{
+  \ifvmode \ifnum \theitemi = 0 %außerhalb einer itemize
+    \begin{itemize}\setcounter{itemi}{1}
+      \item
+    \else
+      \item %zum Fortsetzen einer Liste
+    \fi
+  \else
+    \item % normales item innerhalb einer Liste
+  \fi
+}
+
+\def‣{
+  \ifvmode
+    \begin{itemize}
+      \item
+  \else
+    \item
+  \fi
+}
+
+\def\—{\end{itemize}}
+
+
+\newcounter{insideitemize}
+\setcounter{insideitemize}{0}
+\newcounter{insideitem}
+\setcounter{insideitem}{0}
+
+\catcode`\•=\active
+
+\iffalse
+\def•{
+  \ifnum \theinsideitemize = 0 % Außerhalb einer itemize-Umgebung ⇒ initialisieren
+    \begin{itemize}
+      \iffalse
+      \catcode`\^^M=\active
+      \def^^M{\myeol} \catcode`\^^M=5%
+      \fi
+      \setcounter{insideitemize}{1} % Nun innerhalb einer itemize
+      \setcounter{insideitem}{1}% und innerhalb eines Items
+      \expandafter\item
+  \else
+    \makeatletter
+      \ifthenelse{\boolean{@inlabel}}{%
+    \makeatother
+      tach
+}{%
+    \makeatother
+      \setcounter{insideitem}{1}% innerhalb eines items
+      \expandafter\item
+}
+  \fi
+}
+\fi
+
+\def\myeol{%
+  \ifnum \theinsideitem = 0%
+    \end{itemize}%
+    \catcode`\^^M=5%
+    \setcounter{insideitem}{0}%
+  \else%
+    \setcounter{insideitem}{0}%
+\fi%
+}
+% \end{macrocode}
+
+% Definiert eine übergroße Displaystyle-Formel – nützlich z.B. bei Präsentationen.
+\def\hugedisplaymath{
+\makeatletter
+\def\fontsize@before@hugemath{}
+\makeatother
+\Huge
+  \begin{equation*}
+}
+\def\endhugedisplaymath{
+  \end{equation*}
+}
