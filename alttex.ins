@@ -1,0 +1,12 @@
+\input docstrip
+\preamble
+	alttex: writing alternatively
+\endpreamble
+\keepsilent
+\askforoverwritefalse
+
+\generate{\file{alttex.drv}{\from{alttex.dtx}{driver}}
+	  \file{alttex.sty}{\from{alttex.dtx}{package}}
+}
+
+\endbatchfile

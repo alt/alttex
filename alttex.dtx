@@ -1,39 +1,62 @@
-%%
-%% This is file `alttex.sty',
-%% generated with the docstrip utility.
-%%
-%% The original source files were:
-%%
-%% alttex.dtx  (with options: `package')
-%% alttex: writing alternatively
+% \iffalse
+% This is alttex.dtx, a small experimental package.
+%
 %% This software is copyright, 2008, Arno L. Trautmann
-%%
+%% 
 %% This program is free software; you can redistribute it and/or
 %% modify it under the terms of the GNU General Public License
 %% as published by the Free Software Foundation; either version 2
 %% of the License, or (at your option) any later version.
-%%
+%% 
 %% This program is distributed in the hope that it will be useful,
 %% but WITHOUT ANY WARRANTY; without even the implied warranty of
 %% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %% GNU General Public License for more details.
-%%
+%% 
 %% You should have received a copy of the GNU General Public License
 %% along with this program; if not, write to the Free Software
 %% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-%%
+%% 
 %% Author: Arno L. Trautmann, arno.trautmann@gmx.de
 %%
-
-\NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{alttex}[2008/12/17 \space0.a\space textpos]
-\typeout{Package: `alttex' 0.a\space<2008/12/17 >}
+%
+%<+package|driver>
+%<+package>\NeedsTeXFormat{LaTeX2e}
+%<+package>\ProvidesPackage{alttex}[2008/12/17 \space0.a\space textpos]
+%<+package>\typeout{Package: `alttex' 0.a\space<2008/12/17 >}
+%
+%<*driver>
+%\documentclass[12pt]{ltxdoc}
+\documentclass{ltxdoc}
+%\usepackage{alttex}
+\title{The \textsf{alttex} package}
+\author{Arno L. Trautmann\thanks{arno.trautmann@gmx.de}}
+\date{Version 0.a, 2008 December 17}
+\begin{document}
+\maketitle
+\DocInput{alttex.dtx}
+\end{document}
+%</driver>
+%
+% \fi
+% 
+% This is the package \verb~alttex~ which will try to give an experimental new way to write \LaTeX code. So far it is mostly done with very dirty and actually it’s a collection of things I think about in boring lectures. Maybe someone will have fun with the following code.
+% 
+% The problem I have with \LaTeX{} is the antique way of typing. Because most people still use a hopeless outdated keyboard layout („qertzy“ or slightly adapted versions of that), \LaTeX doesn’t make use of some cool features. I’m not talking about writing chinese or arabic text. Maybe this example will make the idea clear:
+% 
+% In standard \LaTeX, one has to write
+% 
+%   
+%   
+% 
+%    \begin{macrocode}
 \ProvidesPackage{alttex}
 
 \RequirePackage{exscale} % For huge math
 
 \catcode`\•=\active
 \catcode`\‣=\active
+% Make () \right and \left
 \makeatletter
 \def\resetMathstrut@{%
   \setbox\z@\hbox{%
@@ -85,6 +108,7 @@
 
 \def\—{\end{itemize}}
 
+
 \newcounter{insideitemize}
 \setcounter{insideitemize}{0}
 \newcounter{insideitem}
@@ -126,7 +150,9 @@
     \setcounter{insideitem}{0}%
 \fi%
 }
+% \end{macrocode}
 
+% Definiert eine übergroße Displaystyle-Formel – nützlich z.B. bei Präsentationen.
 \def\hugedisplaymath{
 \makeatletter
 \def\fontsize@before@hugemath{}
@@ -137,6 +163,6 @@
 \def\endhugedisplaymath{
   \end{equation*}
 }
+%    \end{macrocode}
+% \Finale
 \endinput
-%%
-%% End of file `alttex.sty'.
