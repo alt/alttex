@@ -32,8 +32,29 @@
 
 \RequirePackage{exscale} % For huge math
 
-\catcode`\•=\active
-\catcode`\‣=\active
+\def\noescape{
+  \catcode`\_= 11%
+  \catcode`\^= 11%
+  \catcode`\#= 11%
+  \catcode`\&= 11%
+  %\catcode`\{= 11%
+  %\catcode`\}= 11%
+  \catcode`\$= 11%
+  \catcode`\~= 11%
+  \catcode`\%= 11
+}
+\def\oldescape{
+  \catcode`\%= 14%
+  \catcode`\_= 8%
+  \catcode`\^= 7%
+  \catcode`\#= 6%
+  \catcode`\&= 4%
+  %\catcode`\{= 1%
+  %\catcode`\}= 2%
+  \catcode`\$= 3%
+  \catcode`\~= 13%
+}
+
 
 \makeatletter
 \def\resetMathstrut@{%
@@ -60,8 +81,20 @@
   \mathcode`)"8000
 }
 
+\def\hugedisplaymath{
+  \makeatletter
+    \makeatother
+  \Huge
+    \begin{equation*}
+}
+\def\endhugedisplaymath{
+  \end{equation*}
+}
 \newcounter{itemi}
 \setcounter{itemi}{0}
+
+\catcode`\•=\active
+\catcode`\‣=\active
 
 \def•{
   \ifvmode \ifnum \theitemi = 0 %außerhalb einer itemize
@@ -126,17 +159,6 @@
   \else%
     \setcounter{insideitem}{0}%
 \fi%
-}
-
-\def\hugedisplaymath{
-\makeatletter
-\def\fontsize@before@hugemath{}
-\makeatother
-\Huge
-  \begin{equation*}
-}
-\def\endhugedisplaymath{
-  \end{equation*}
 }
 \endinput
 %%
