@@ -22,12 +22,123 @@
 %% along with this program; if not, write to the Free Software
 %% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 %%
-%% Author: Arno L. Trautmann, arno.trautmann@gmx.de
+%% Author: Arno L. Trautmann, arno dot trautmann at gmx dot de
 %%
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{alttex}[2008/12/17 \space0.a\space textpos]
 \typeout{Package: `alttex' 0.a\space<2008/12/17 >}
+\ProvidesPackage{alttex}
+
+\RequirePackage{amsmath}
+\RequirePackage{exscale}
+\RequirePackage{ifxetex}
+\ifxetex
+\typeout{Loading XeTeX, everything’s fine.}
+\else
+  \typeout{^^J%
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
+  ! This package can only be compiled with XeLaTeX.^^J%
+  ! pdfLaTeX cannot handle unicode the way it is used here.^^J%
+  ! If you want to have support for [utf8]inputenc, please contact the author.^^J%
+  ! If you want to use LuaLaTeX, give it a try:^^J%
+  ! comment out the lines 32,33,35–43.^^J%
+  ! Please e-mail me the result of your experiences!^^J%
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
+  }
+  \errmessage{No XeLaTeX, no alttex. See the log for more information.}
+  \endinput
+\fi
+
+\def\noescape{
+  \catcode`\_= 11%
+  \catcode`\^= 11%
+  \catcode`\#= 11%
+  \catcode`\&= 11%
+  %\catcode`\{= 11%
+  %\catcode`\}= 11%
+  \catcode`\$= 11%
+  \catcode`\~= 11%
+  \makeatletter% I just noticed this is not necessary… but I’ll leave it for some strange \thin@gs or so…
+  \catcode`\%= 11
+}
+\def\oldescape{
+  \catcode`\%= 14%
+  \catcode`\_= 8%
+  \catcode`\^= 7%
+  \catcode`\#= 6%
+  \catcode`\&= 4%
+  %\catcode`\{= 1%
+  %\catcode`\}= 2%
+  \catcode`\$= 3%
+  \catcode`\~= 13%
+  \makeatother%
+}
+
+
+\makeatletter
+\def\resetMathstrut@{%
+  \setbox\z@\hbox{%
+    \mathchardef\@tempa\mathcode`\[\relax
+    \def\@tempb##1"##2##3{\the\textfont"##3\char"}%
+    \expandafter\@tempb\meaning\@tempa \relax
+}%
+  \ht\Mathstrutbox@\ht\z@ \dp\Mathstrutbox@\dp\z@
+}
+\makeatother
+
+\edef\oldbraces{
+  \mathcode`(\the\mathcode`(
+  \mathcode`)\the\mathcode`)
+}
+\begingroup
+  \catcode`(\active \xdef({\left\string(}
+  \catcode`)\active \xdef){\right\string)}
+\endgroup
+\def\newbraces{
+
+  \mathcode`("8000
+  \mathcode`)"8000
+}
+
+\def\hugedisplaymath{
+  \makeatletter
+    \makeatother
+  \Huge
+    \begin{equation*}
+}
+\def\endhugedisplaymath{
+  \end{equation*}
+}
+
+\catcode`\•=\active
+\catcode`\‣=\active
+\makeatletter
+\def\notinside{}
+\def\inside{}
+\let\insideitemizei\outside
+\let\insideitemizeii\outside
+
+\def•{
+  \ifx\insideitemizei\inside
+    \item
+  \else
+    \begin{itemize}
+      \global\let\insideitemizei\inside
+      \item
+  \fi
+}
+
+\def‣{
+  \ifx\insideitemizeii\inside
+    \item
+  \else
+    \begin{itemize}
+      \global\let\insideitemizeii\inside
+      \item
+  \fi
+}
+
 \endinput
 %%
 %% End of file `alttex.sty'.

@@ -17,7 +17,7 @@
 %% along with this program; if not, write to the Free Software
 %% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 %% 
-%% Author: Arno L. Trautmann, arno.trautmann@gmx.de
+%% Author: Arno L. Trautmann, arno dot trautmann at gmx dot de
 %%
 %
 %<+package|driver>
@@ -31,21 +31,25 @@
 \documentclass{ltxdoc}
 \usepackage{ifxetex}
 \ifxetex
-\usepackage{xltxtra}
+  \usepackage{xltxtra}
 \else
-\typeout{^^J%
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
-! This package can only be compiled with XeLaTeX.^^J%
-! pdfLaTeX cannot handle unicode the way it is used here.^^J%
-! If you want to have support for [utf8]inputenc, please contact the author.^^J%
-! If you want to use LuaLaTeX, give it a try:^^J%
-! comment out the lines 32,33,35–43.^^J%
-! Please e-mail me the result of your experiences!^^J%
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
-}
-\errmessage{No XeLaTeX, no alttex. See the log for more information.}
-\endinput
+  \errmessage{No XeLaTeX, no alttex. See the log for more information.}  
+  \typeout{^^J%
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
+  ! This package can only be compiled with XeLaTeX.^^J%
+  ! pdfLaTeX cannot handle unicode the way it is used here.^^J%
+  ! If you want to have support for [utf8]inputenc,^^J%
+  ! please contact the author.^^J%
+  ! If you want to use LuaLaTeX, give it a try:^^J%
+  ! comment out the lines 32,33,35–43.^^J%
+  ! Please e-mail me the result of your experiences!^^J%
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
+  }
+  \endinput
 \fi
+
+\usepackage{todonotes}
+
 \title{The \textsf{alttex} package}
 \author{Arno L. Trautmann\thanks{arno.trautmann@gmx.de}}
 \date{Version 0.a, 2008 December 17}
@@ -57,7 +61,7 @@
 %
 % \fi
 % 
-% This is the package \verb~alttex~ which will try to give an experimental new way to write \XeLaTeX\ code. So far it is mostly done with very dirty and actually it’s a collection of things I think about in boring lectures. Maybe someone will have fun with the following code.
+% This is the package \verb~alttex~ which will try to give an experimental new way to write \XeLaTeX\ code. So far it is mostly done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
 % \tableofcontents
 % \newpage
 % \section{introduction}
@@ -98,8 +102,25 @@
 %    \begin{macrocode}
 \ProvidesPackage{alttex}
 
+\RequirePackage{amsmath}
 \RequirePackage{exscale}
 \RequirePackage{ifxetex}
+\ifxetex
+\typeout{Loading XeTeX, everything’s fine.}
+\else
+  \typeout{^^J%
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
+  ! This package can only be compiled with XeLaTeX.^^J%
+  ! pdfLaTeX cannot handle unicode the way it is used here.^^J%
+  ! If you want to have support for [utf8]inputenc, please contact the author.^^J%
+  ! If you want to use LuaLaTeX, give it a try:^^J%
+  ! comment out the lines 32,33,35–43.^^J%
+  ! Please e-mail me the result of your experiences!^^J%
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
+  }
+  \errmessage{No XeLaTeX, no alttex. See the log for more information.}
+  \endinput
+\fi
 
 %    \end{macrocode}
 % We need |exscale| to write really big formulae, and |ifxetex| to check wether one uses the correct engine.
@@ -120,10 +141,10 @@
   \makeatletter% I just noticed this is not necessary… but I’ll leave it for some strange \thin@gs or so…
   \catcode`\%= 11
 }
-%    \end{macrocode}
+%    \end{macrocode}l
 % \end{macro}
 % \begin{macro}{\oldescape}
-% Of course this has to be reset when doing anything like formula, tabular etc.
+% Of course this has to be reset when doing anything like formula, tabular etc. Maybe I will be able to change the behaviour automatically. Thas idea has been inspired by a discussion on the Con\TeX{}t mailinglist.
 %    \begin{macrocode}
 \def\oldescape{
   \catcode`\%= 14%
@@ -147,9 +168,9 @@
 % \begin{macro}{\oldbraces}
 % Now this is something most \LaTeX-beginners don’t recognize and wonder why the formula looks so ugly: The braces () do not fit to the hight of the formula. This can be achieved by putting |\left| and |\right| in front of the braces. But actually, this is annoying! In almost any case you want this behaviour, so this should be the standard. So we redefine the way braces are handled. With |\newbraces| the ( ) always fit. If you prefer the normal \LaTeX\ way, use |\oldbraces| to reset everything. This new behaviour should be extended to other characters like \verb~| [ { <~ and so on. Maybe in version 0.0.1…
 % 
-% I would have never been able to implement this without the help of the mailinglist members of |TEX-D-L@LISTSERV.DFN.DE|!
+% I would have never been able to implement this without the help of the mailinglist members of |tex-d-l@listserv.dfn.de|!
 % 
-% The redefinition of |\mathstrut| is necessary when using amsmath (you will use amsmath when typesetting formulae, won’t you?), because the hight of formulae is determinated by the hight of a brace. But using ( ) as |\active| characters, we need another brace here. So we take |[|. This will probably also change. But the code is working fine for ( ).
+% The redefinition of |\mathstrut| is necessary when using amsmath (you will use amsmath when typesetting formulae, won’t you?), because the hight of formulae is determinated by the hight of a brace. But using ( ) as |\active| characters, we need another brace here. So we take |[|. This will probably also change. But the code is working fine for ( ).\todo{Maybe one could ”temporarily hardcode“ the hight of [ and then use this…}
 %    \begin{macrocode}
 \makeatletter
 \def\resetMathstrut@{%
@@ -180,8 +201,8 @@
 % \end{macro}
 
 % \begin{environment}{hugedisplaymath}
-% Sometimes, especially in presentations, you might need an really big formula. Imagine two hours of struggle with transformations—and finally there is the beautiful formula. Now you can say
-% \centering{|\begin{hugedisplaymath} E = mc^2 \end{hugedisplaymath}|}
+% Sometimes, especially in presentations, you might need an really big formula. Imagine two hours of struggle with transformations—and finally there is the beautiful formula. Now you can say\\
+% \begin{center}|\begin{hugedisplaymath} E = mc^2 \end{hugedisplaymath}| \end{center}
 % There should be several steps of size, maybe.
 %    \begin{macrocode}
 \def\hugedisplaymath{
@@ -203,77 +224,35 @@
 % This does not—guess it— work correctly so far. I’m trying to find a tricky way so that the ending character is not necessary any more. So far one has to end an itemize with something like an |—|. There will also be a possibility to change the characters responsible for the whole action.
 % \begin{macro}{• instead of \item}
 %    \begin{macrocode}
-\newcounter{itemi}
-\setcounter{itemi}{0}
 
 \catcode`\•=\active
 \catcode`\‣=\active
+\makeatletter
+\def\notinside{}
+\def\inside{}
+\let\insideitemizei\outside
+\let\insideitemizeii\outside
 
 \def•{
-  \ifvmode \ifnum \theitemi = 0 %außerhalb einer itemize
-    \begin{itemize}\setcounter{itemi}{1}
-      \item
-    \else
-      \item %zum Fortsetzen einer Liste
-    \fi
+  \ifx\insideitemizei\inside
+    \item
   \else
-    \item % normales item innerhalb einer Liste
+    \begin{itemize}
+      \global\let\insideitemizei\inside
+      \item 
   \fi
 }
 
 \def‣{
-  \ifvmode
-    \begin{itemize}
-      \item
-  \else
+  \ifx\insideitemizeii\inside
     \item
-  \fi
-}
-
-\def\—{\end{itemize}}
-
-
-\newcounter{insideitemize}
-\setcounter{insideitemize}{0}
-\newcounter{insideitem}
-\setcounter{insideitem}{0}
-
-\catcode`\•=\active
-
-\iffalse
-\def•{
-  \ifnum \theinsideitemize = 0 % Außerhalb einer itemize-Umgebung ⇒ initialisieren
-    \begin{itemize}
-      \iffalse
-      \catcode`\^^M=\active
-      \def^^M{\myeol} \catcode`\^^M=5%
-      \fi
-      \setcounter{insideitemize}{1} % Nun innerhalb einer itemize
-      \setcounter{insideitem}{1}% und innerhalb eines Items
-      \expandafter\item
   \else
-    \makeatletter
-      \ifthenelse{\boolean{@inlabel}}{%
-    \makeatother
-      tach
-}{%
-    \makeatother
-      \setcounter{insideitem}{1}% innerhalb eines items
-      \expandafter\item
-}
+    \begin{itemize}
+      \global\let\insideitemizeii\inside
+      \item 
   \fi
 }
-\fi
 
-\def\myeol{%
-  \ifnum \theinsideitem = 0%
-    \end{itemize}%
-    \catcode`\^^M=5%
-    \setcounter{insideitem}{0}%
-  \else%
-    \setcounter{insideitem}{0}%
-\fi%
-}
 %    \end{macrocode}
 % \end{macro}
 % \Finale
