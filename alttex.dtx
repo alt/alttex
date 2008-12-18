@@ -29,11 +29,23 @@
 %\documentclass[12pt]{ltxdoc}
 % \usepackage{alttex}
 \documentclass{ltxdoc}
-\usepackage{
-xltxtra,
-lmodern
+\usepackage{ifxetex}
+\ifxetex
+\usepackage{xltxtra}
+\else
+\typeout{^^J%
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
+! This package can only be compiled with XeLaTeX.^^J%
+! pdfLaTeX cannot handle unicode the way it is used here.^^J%
+! If you want to have support for [utf8]inputenc, please contact the author.^^J%
+! If you want to use LuaLaTeX, give it a try:^^J%
+! comment out the lines 32,33,35–43.^^J%
+! Please e-mail me the result of your experiences!^^J%
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
 }
-
+\errmessage{No XeLaTeX, no alttex. See the log for more information.}
+\endinput
+\fi
 \title{The \textsf{alttex} package}
 \author{Arno L. Trautmann\thanks{arno.trautmann@gmx.de}}
 \date{Version 0.a, 2008 December 17}
@@ -45,10 +57,11 @@ lmodern
 %
 % \fi
 % 
-% This is the package \verb~alttex~ which will try to give an experimental new way to write \LaTeX code. So far it is mostly done with very dirty and actually it’s a collection of things I think about in boring lectures. Maybe someone will have fun with the following code.
+% This is the package \verb~alttex~ which will try to give an experimental new way to write \XeLaTeX\ code. So far it is mostly done with very dirty and actually it’s a collection of things I think about in boring lectures. Maybe someone will have fun with the following code.
 % \tableofcontents
+% \newpage
 % \section{introduction}
-% The problem I have with \LaTeX{} is the antique way of typing. Because most people still use a hopeless outdated keyboard layout („qertzy“ or slightly adapted versions of that), \LaTeX doesn’t make use of some cool features. I’m not talking about writing chinese or arabic text. Maybe this example will make the idea clear:
+% The problem I have with \LaTeX\footnote{I’ll write \LaTeX{} instead of \XeLaTeX—saves me two keystrokes. Most of the code below \emph{only} works with \XeLaTeX. If you need support for [utf8]inputenc or Lua\LaTeX, please contact the author.}  is the antique way of typing. Because most people still use a hopelessly outdated keyboard layout („qwerty“ or slightly adapted versions of that), \LaTeX{} doesn’t make use of some cool features. I’m not talking about writing chinese or arabic text! Maybe this example will make the idea clear:
 % 
 % In standard \LaTeX, one has to write
 % \begin{verbatim}
@@ -57,37 +70,43 @@ lmodern
 %   \item text for first item
 %   \item \begin{itemize}
 %         \item this is an item inside an item…
-%         \item another item
+%         \item[$\Rightarrow$] Here an item with a formula: $\int_a^b x^2 dx$
 %         \end{itemize}
 %   \item and the outer itemize goes on…
 % \end{itemize}
 % \end{verbatim}
 % 
-% Using this package, you can simply write\footnote{The lmodern font I’m using here does not have the symbol for the inner item…}
+% Using this package and having a superior keyboard layout\footnote{E.\,g. the ergonomic layut NEO.}, you can simply write:\footnote{The lmodern font I’m using here does not have the symbol for the inner item , so we change to DejaVu Sans Mono here.}
+% {\setmonofont[Scale=0.85]{DejaVu Sans Mono}
 % \begin{verbatim}
 % This is the normal text, then comes the itemization:
 % 
-% • text for first itemi
+% • text for first item
 % • 
 % 
 %   ‣ this is an item inside an item
-%   ‣ another item
+%   ‣[⇒] Here an item with a formula: $∫_a^b x² dx$
 %   
 % • and the outer itemize goes on…
 % 
 % And your normal text goes on…
-% \end{verbatim}
-% Well, actually I’m lying now. But it’s the aim of this package to provide this – besides many, many other funny and cool things. I have just started it, there will be much more stuff here.
+% \end{verbatim}}
+% Well, actually I’m lying now because this is not fully implemented so far. But it’s the aim of this package to provide this – besides many, many other funny and cool things. The aim is to offer a more „wysiwyg“ way, without loosing anything of logical markup. One still can re|\def|ine the |•| if he doesn’t like the way his items look.
+% I have just started to write the package, there will be much more stuff here in the future.
+% 
+% Ok, enough blahblah, now comes the code. We begin with the mostly uninteresting preamble stuff:
 %    \begin{macrocode}
 \ProvidesPackage{alttex}
 
-\RequirePackage{exscale} % For huge math
+\RequirePackage{exscale}
+\RequirePackage{ifxetex}
 
 %    \end{macrocode}
+% We need |exscale| to write really big formulae, and |ifxetex| to check wether one uses the correct engine.
 % \section{Textmode}
 % \subsection{no escape}
 % \begin{macro}{\noescape}
-% You want to write plain text. Maybe you’re annoyed by always escaping characters like \_ \^ \# \& \{ \} \$ \textasciitilde{} and so on. |\noescape| allows you to never escape anything—except the \textbackslash, which still might be used for |\textit{}| or so. Or maybe not… because the \{ \} are not escaped. Have to think about this one. Maybe the \textbackslash will be redefined to define \{ \} by itself.
+% You want to write plain text. Maybe you’re annoyed by always escaping characters like \_ \^ \# \& \{ \} \$ \textasciitilde{} and so on. |\noescape| allows you to never escape anything—except the \textbackslash, which still might be used for |\textit{}| or so. Or maybe not… because the \{ \} are not escaped. Have to think about this one. Maybe the \textbackslash{} will be redefined to define \{ \} by itself.
 %    \begin{macrocode}
 \def\noescape{
   \catcode`\_= 11%
@@ -98,6 +117,7 @@ lmodern
   %\catcode`\}= 11%
   \catcode`\$= 11%
   \catcode`\~= 11%
+  \makeatletter% I just noticed this is not necessary… but I’ll leave it for some strange \thin@gs or so…
   \catcode`\%= 11
 }
 %    \end{macrocode}
@@ -115,6 +135,7 @@ lmodern
   %\catcode`\}= 2%
   \catcode`\$= 3%
   \catcode`\~= 13%
+  \makeatother%
 }
 %    \end{macrocode}
 
