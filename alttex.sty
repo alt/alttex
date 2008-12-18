@@ -26,7 +26,7 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{alttex}[2008/12/17 \space0.a\space textpos]
+\ProvidesPackage{alttex}[2008/12/17 \space0.1a\space textpos]
 \typeout{Package: `alttex' 0.a\space<2008/12/17 >}
 \ProvidesPackage{alttex}
 
@@ -117,21 +117,21 @@
 
 \def\newitemi{
   \ifx\insideitemizei\inside
-    \item
+    \expandafter\item%
   \else
     \begin{itemize}
       \global\let\insideitemizei\inside
-      \item
+      \expandafter\item%
   \fi
 }
 
 \def\newitemii{
   \ifx\insideitemizeii\inside
-    \item
+    \expandafter\item%
   \else
     \begin{itemize}
       \global\let\insideitemizeii\inside
-      \item
+      \expandafter\item%
   \fi
 }
 \makeatletter
