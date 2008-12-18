@@ -220,20 +220,20 @@
 % \section{itemize and similar things}
 % \subsection{itemize with a single character}
 % \begin{macro}{• instead of \item}
-% Here we use an active character (mostly a unicode character bullet •) for the whole construct. And another one for nested itemizations (like a triangular bullet \nolinebreak{\fontspec[Scale=0.8]{DejaVu Sans Mono}‣})
+% Here we use an active character (mostly a unicode character bullet •) for the whole construct. And another one for nested itemizations (like a triangular bullet \nolinebreak{\fontspec[Scale=0.8]{DejaVu Sans Mono}‣}).
 % 
-% This does not—guess it— work correctly so far. I’m trying to find a tricky way so that the ending character is not necessary any more. So far one has to end an itemize with something like an |—|. There will also be a possibility to change the characters responsible for the whole action.
+% This does not—guess it— work correctly so far. I’m trying to find a tricky way so that the ending character is not necessary any more. So far one has to end an itemize with something like an |—| (em-dash). There will also be a possibility to change the characters responsible for the whole action.\footnote{The triangular bullet sign does not appear here – the font is lacking it…}
+% 
+% \begin{macro}{\newitemi}
+% \begin{macro}{\newitemii}
+% The following ugly peace of code is writen by me, defining the conditional insertion of the |\begin{itemize}|. This will be assigned to an active character using |\makeitemi| and |\makeitemii|, respectively.
 %    \begin{macrocode}
-
-\catcode`\•=\active
-\catcode`\‣=\active
-\makeatletter
 \def\notinside{}
 \def\inside{}
 \let\insideitemizei\outside
 \let\insideitemizeii\outside
 
-\def•{
+\def\newitemi{
   \ifx\insideitemizei\inside
     \item
   \else
@@ -243,7 +243,7 @@
   \fi
 }
 
-\def‣{
+\def\newitemii{
   \ifx\insideitemizeii\inside
     \item
   \else
@@ -252,8 +252,75 @@
       \item 
   \fi
 }
+%    \end{macrocode}
+% \end{macro}\end{macro}
+% Ok, the following code is stolen from the |shortvrb| package, and I don’t understand anything of it. But I keep on trying… nevertheless, it’s working fine, as far as I can see.
+% \begin{macro}{\makeitemi}
+% \begin{macro}{\makeitemii}
+% With this macro, you can define the character you want to use for first-level itemize. (Guess the sense of |\makeitemii|…) Default ist |•| for first-level and |‣| for second-level. Maybe this will be extended till fourth level. More doesn‘t seem to make any sense.
+%    \begin{macrocode}
+% 
+\makeatletter
+\def\makeitemi#1{%
+  \expandafter\ifx\csname cc\string#1\endcsname\relax
+    \add@special{#1}%
+    \expandafter
+    \xdef\csname cc\string#1\endcsname{\the\catcode`#1}%
+    \begingroup
+      \catcode`\~\active  \lccode`\~`#1%
+      \lowercase{%
+      \global\expandafter\let
+         \csname ac\string#1\endcsname~%
+      \expandafter\gdef\expandafter~\expandafter{\newitemi}}%
+    \endgroup
+    \global\catcode`#1\active
+  \else
+  \fi
+}
 
+\def\makeitemii#1{%
+  \expandafter\ifx\csname cc\string#1\endcsname\relax
+    \add@special{#1}%
+    \expandafter
+    \xdef\csname cc\string#1\endcsname{\the\catcode`#1}%
+    \begingroup
+      \catcode`\~\active  \lccode`\~`#1%
+      \lowercase{%
+      \global\expandafter\let
+         \csname ac\string#1\endcsname~%
+      \expandafter\gdef\expandafter~\expandafter{\newitemii}}%
+    \endgroup
+    \global\catcode`#1\active
+  \else
+  \fi
+}
+%    \end{macrocode}
+% \end{macro}\end{macro}
+% Now there are the two helperfunctions – no guess what they are really doing.
+%    \begin{macrocode}
+\def\add@special#1{%
+  \rem@special{#1}%
+  \expandafter\gdef\expandafter\dospecials\expandafter
+{\dospecials \do #1}%
+  \expandafter\gdef\expandafter\@sanitize\expandafter
+{\@sanitize \@makeother #1}}
+\def\rem@special#1{%
+  \def\do##1{%
+    \ifnum`#1=`##1 \else \noexpand\do\noexpand##1\fi}%
+  \xdef\dospecials{\dospecials}%
+  \begingroup
+    \def\@makeother##1{%
+      \ifnum`#1=`##1 \else \noexpand\@makeother\noexpand##1\fi}%
+    \xdef\@sanitize{\@sanitize}%
+  \endgroup}
+\makeatother
+%    \end{macrocode}
+% Finally, we set the default characters for itemi and itemii:
+%    \begin{macrocode}
+\makeitemi•
+\makeitemii‣
 %    \end{macrocode}
 % \end{macro}
+% And that’s it. Happy alt\TeX{}ing!
 % \Finale
 \endinput
