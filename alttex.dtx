@@ -1,29 +1,14 @@
 % \iffalse
 % This is alttex.dtx, a small experimental package.
-%
-%% This software is copyright, 2008, Arno L. Trautmann
-%% 
-%% This program is free software; you can redistribute it and/or
-%% modify it under the terms of the GNU General Public License
-%% as published by the Free Software Foundation; either version 2
-%% of the License, or (at your option) any later version.
-%% 
-%% This program is distributed in the hope that it will be useful,
-%% but WITHOUT ANY WARRANTY; without even the implied warranty of
-%% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-%% GNU General Public License for more details.
-%% 
-%% You should have received a copy of the GNU General Public License
-%% along with this program; if not, write to the Free Software
-%% Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-%% 
-%% Author: Arno L. Trautmann, arno dot trautmann at gmx dot de
+% 
+% This code is public domain.
+% 
+%% Author: Arno L. Trautmann, mail: arno dot trautmann at gmx dot de
 %%
 %
 %<+package|driver>
 %<+package>\NeedsTeXFormat{LaTeX2e}
-%<+package>\ProvidesPackage{alttex}[2008/12/17 \space0.1a\space textpos]
-%<+package>\typeout{Package: `alttex' 0.a\space<2008/12/17 >}
+%<+package>\ProvidesPackage{alttex}[]
 %
 %<*driver>
 %\documentclass[12pt]{ltxdoc}
@@ -33,7 +18,7 @@
 \ifxetex
   \usepackage{xltxtra}
 \else
-  \errmessage{No XeLaTeX, no alttex. See the log for more information.}  
+  \errmessage{No XeLaTeX -> no alttex! See the log for more information.}
   \typeout{^^J%
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
   ! This package can only be compiled with XeLaTeX.^^J%
@@ -41,7 +26,7 @@
   ! If you want to have support for [utf8]inputenc,^^J%
   ! please contact the author.^^J%
   ! If you want to use LuaLaTeX, give it a try:^^J%
-  ! comment out the lines 32,33,35–43.^^J%
+  ! comment out the lines 32, 33, 35–43.^^J%
   ! Please e-mail me the result of your experiences!^^J%
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
   }
@@ -52,7 +37,7 @@
 
 \title{The \textsf{alttex} package}
 \author{Arno L. Trautmann\thanks{arno.trautmann@gmx.de}}
-\date{Version 0.a, 2008 December 17}
+\date{Version 0.a.1 \today}
 \begin{document}
 \maketitle
 \DocInput{alttex.dtx}
@@ -61,7 +46,7 @@
 %
 % \fi
 % 
-% This is the package \verb~alttex~ which will try to give an experimental new way to write \XeLaTeX\ code. So far it is mostly done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
+% This is the package |alttex| which will try to give an experimental new way to write \XeLaTeX\ code. So far it is mostly done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
 % \tableofcontents
 % \newpage
 % \section{introduction}
@@ -80,7 +65,7 @@
 % \end{itemize}
 % \end{verbatim}
 % 
-% Using this package and having a superior keyboard layout\footnote{E.\,g. the ergonomic layut NEO.}, you can simply write:\footnote{The lmodern font I’m using here does not have the symbol for the inner item , so we change to DejaVu Sans Mono here.}
+% Using this package and having a superior keyboard layout\footnote{E.\,g. the ergonomic layout NEO.}, you can simply write:\footnote{The lmodern font I’m using here does not have the symbol for the inner item , so we change to DejaVu Sans Mono here.}
 % {\setmonofont[Scale=0.85]{DejaVu Sans Mono}
 % \begin{verbatim}
 % This is the normal text, then comes the itemization:
@@ -103,6 +88,15 @@
 \ProvidesPackage{alttex}
 
 \RequirePackage{amsmath}
+\let\oldpackage\usepackage
+\def\usepackage#1{
+  \AtBeginDocument{hallo}
+  \IfFileExists{#1}{
+    \oldpackage{#1}
+  }{
+    \immediate\write18{tlmgr install #1}
+  }
+}
 \RequirePackage{exscale}
 \RequirePackage{ifxetex}
 \ifxetex
@@ -159,9 +153,9 @@
   \makeatother%
 }
 %    \end{macrocode}
-
 % \end{macro}
-
+% \subsection{tables}
+% The way one has to type extensive tables is quite complex – and the resulting code is often not really readable. I don’t have an idea how to change this, but I’m thinking about it. Just a reminder to myself… mail me any suggestions for this!
 % \section{Math stuff}
 % \subsection{braces}
 % \begin{macro}{\newbraces}
@@ -174,7 +168,7 @@
 %    \begin{macrocode}
 \makeatletter
 \def\resetMathstrut@{%
-  \setbox\z@\hbox{%
+    \setbox\z@\hbox{%
     \mathchardef\@tempa\mathcode`\[\relax
     \def\@tempb##1"##2##3{\the\textfont"##3\char"}%
     \expandafter\@tempb\meaning\@tempa \relax
@@ -191,8 +185,8 @@
   \catcode`(\active \xdef({\left\string(}
   \catcode`)\active \xdef){\right\string)}
 \endgroup
-\def\newbraces{
 
+\def\newbraces{
   \mathcode`("8000
   \mathcode`)"8000
 }
@@ -222,7 +216,7 @@
 % \begin{macro}{• instead of \item}
 % Here we use an active character (mostly a unicode character bullet •) for the whole construct. And another one for nested itemizations (like a triangular bullet \nolinebreak{\fontspec[Scale=0.8]{DejaVu Sans Mono}‣}).
 % 
-% This does not—guess it— work correctly so far. I’m trying to find a tricky way so that the ending character is not necessary any more. So far one has to end an itemize with something like an |—| (em-dash). There will also be a possibility to change the characters responsible for the whole action.\footnote{The triangular bullet sign does not appear here – the font is lacking it…}
+% This does—guess it—not work correctly so far. I’m trying to find a tricky way so that the ending character is not necessary any more. So far one has to end an itemize with something like an |—| (em-dash). There will also be a possibility to change the characters responsible for the whole action.\footnote{The triangular bullet sign does not appear here – the font is lacking it…}
 % 
 % \begin{macro}{\newitemi}
 % \begin{macro}{\newitemii}
@@ -315,12 +309,86 @@
   \endgroup}
 \makeatother
 %    \end{macrocode}
-% Finally, we set the default characters for itemi and itemii:
+% \end{macro}
+% \begin{macro}{¹²³}
+% And we do just the same stuff with |\enumerate|. But here we take the |¹| as first level item, the |²| as second level etc. This may be confusing some way, but just try it.
+%
+% For the implementation: copy-pasted the code above, nothing interesting so far.
+%    \begin{macrocode}
+\let\insideenumi\outside
+\let\insideenumii\outside
+
+\def\newenumi{
+  \ifx\insideenumi\inside
+    \expandafter\item%
+  \else
+    \begin{enumerate}
+      \global\let\insideenumi\inside
+      \expandafter\item%
+  \fi
+}
+
+\def\newenumii{
+  \ifx\insideenumii\inside
+    \expandafter\item%
+  \else
+    \begin{enumerate}
+      \global\let\insideenumii\inside
+      \expandafter\item%
+  \fi
+}
+
+%    \end{macrocode}
+% We use the same methods as above, still not understanding, what they are doing. Just changing two lines of code and hoping, everything will be fine.
+%    \begin{macrocode}
+\makeatletter
+\def\makeenumi#1{%
+  \expandafter\ifx\csname cc\string#1\endcsname\relax
+    \add@special{#1}%
+    \expandafter
+    \xdef\csname cc\string#1\endcsname{\the\catcode`#1}%
+    \begingroup
+      \catcode`\~\active  \lccode`\~`#1%
+      \lowercase{%
+      \global\expandafter\let
+         \csname ac\string#1\endcsname~%
+      \expandafter\gdef\expandafter~\expandafter{\newenumi}}%
+    \endgroup
+    \global\catcode`#1\active
+  \else
+  \fi
+}
+
+\def\makeenumii#1{%
+  \expandafter\ifx\csname cc\string#1\endcsname\relax
+    \add@special{#1}%
+    \expandafter
+    \xdef\csname cc\string#1\endcsname{\the\catcode`#1}%
+    \begingroup
+      \catcode`\~\active  \lccode`\~`#1%
+      \lowercase{%
+      \global\expandafter\let
+         \csname ac\string#1\endcsname~%
+      \expandafter\gdef\expandafter~\expandafter{\newenumii}}%
+    \endgroup
+    \global\catcode`#1\active
+  \else
+  \fi
+}
+\makeatother
+
+%    \end{macrocode}
+% \end{macro}
+% Finally, we set the default characters for the items and enumerations:
 %    \begin{macrocode}
 \makeitemi•
 \makeitemii‣
+\makeenumi¹
+\makeenumii²
 %    \end{macrocode}
-% \end{macro}
+
+
 % And that’s it. Happy alt\TeX{}ing!
+% \todo{Tabelle, blindtext}
 % \Finale
 \endinput
