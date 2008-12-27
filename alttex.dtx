@@ -83,20 +83,31 @@
 % Well, actually I’m lying now because this is not fully implemented so far. But it’s the aim of this package to provide this – besides many, many other funny and cool things. The aim is to offer a more „wysiwyg“ way, without loosing anything of logical markup. One still can re|\def|ine the |•| if he doesn’t like the way his items look.
 % I have just started to write the package, there will be much more stuff here in the future.
 % 
-% Ok, enough blahblah, now comes the code. We begin with the mostly uninteresting preamble stuff:
+% Ok, enough blahblah, now comes the code. We begin with the uninteresting preamble stuff:
 %    \begin{macrocode}
 \ProvidesPackage{alttex}
 
 \RequirePackage{amsmath}
+%    \end{macrocode}
+% \begin{macro}{\usepackage}
+% Now, this is the first highlight. It is an extremely simple and stupid approach to load missing packages on-the-fly, just like Mik\TeX{} does. We re|\def|ine the |\usepackage| and hope, it works. Only working with texlive! If you’re using Mik\TeX{}, put a
+% \begin{verbatim}  \let\usepacke\oldpackage\end{verbatim} into your preamble, \emph{directly} after loading |alttex|. If this does not work, delete the following lines from your |alttex.sty|.
+%    \begin{macrocode}
 \let\oldpackage\usepackage
 \def\usepackage#1{
   \AtBeginDocument{hallo}
-  \IfFileExists{#1}{
+  \IfFileExists{#1.sty}{
     \oldpackage{#1}
   }{
     \immediate\write18{tlmgr install #1}
   }
 }
+%    \end{macrocode}
+% \end{macro}
+% So far, this code seems to be a bit buggy, but it should work anyhow.
+% 
+% Now load some nice packages and testing wether you’re running \XeLaTeX{} or not.
+%    \begin{macrocode}
 \RequirePackage{exscale}
 \RequirePackage{ifxetex}
 \ifxetex
@@ -169,10 +180,10 @@
 \makeatletter
 \def\resetMathstrut@{%
     \setbox\z@\hbox{%
-    \mathchardef\@tempa\mathcode`\[\relax
-    \def\@tempb##1"##2##3{\the\textfont"##3\char"}%
-    \expandafter\@tempb\meaning\@tempa \relax
-}%
+      \mathchardef\@tempa\mathcode`\[\relax
+      \def\@tempb##1"##2##3{\the\textfont"##3\char"}%
+      \expandafter\@tempb\meaning\@tempa \relax
+    }%
   \ht\Mathstrutbox@\ht\z@ \dp\Mathstrutbox@\dp\z@
 }
 \makeatother

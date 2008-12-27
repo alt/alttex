@@ -17,7 +17,7 @@
 \let\oldpackage\usepackage
 \def\usepackage#1{
   \AtBeginDocument{hallo}
-  \IfFileExists{#1}{
+  \IfFileExists{#1.sty}{
     \oldpackage{#1}
   }{
     \immediate\write18{tlmgr install #1}
@@ -69,10 +69,10 @@
 \makeatletter
 \def\resetMathstrut@{%
     \setbox\z@\hbox{%
-    \mathchardef\@tempa\mathcode`\[\relax
-    \def\@tempb##1"##2##3{\the\textfont"##3\char"}%
-    \expandafter\@tempb\meaning\@tempa \relax
-}%
+      \mathchardef\@tempa\mathcode`\[\relax
+      \def\@tempb##1"##2##3{\the\textfont"##3\char"}%
+      \expandafter\@tempb\meaning\@tempa \relax
+    }%
   \ht\Mathstrutbox@\ht\z@ \dp\Mathstrutbox@\dp\z@
 }
 \makeatother
