@@ -271,10 +271,13 @@
 \altmath{β}\beta
 \altmath{γ}\gamma
 \altmath{δ}\delta
+
 \altmath{⇒}\Rightarrow
 \altmath{⇐}\Leftarrow
 \altmath{⇔}\Leftrightarrow
-\altmath{∫}{\int}
+
+\altmath{∫}\int
+\altmath{∀}\forall
 }
 %    \end{macrocode}
 % There will be an |\makenormalmath|-switch as well.
@@ -379,7 +382,7 @@
 % \end{macro}
 % \subsection{enumerate with a single character}
 % \begin{macro}{¹, ²}
-% And we do just the same stuff with |\enumerate|. But here we take the character |¹| as first level item, the |²| as second level etc. This may be confusing some way, but just try it.
+% And we do just the same stuff with |\enumerate|. But here we take the character |¹| as first level item, the |²|\footnote{Maybe this is a very stupid idea, because now the |²| cannot be used as a square in mathmode. Of course there could be a test |ifmmode|, but I rather would like to find a better character for |enumerate|.} as second level etc. This may be confusing some way, but just try it.
 %
 % For the implementation: copy-pasted the code above, nothing interesting so far.
 %    \begin{macrocode}
@@ -468,5 +471,12 @@
 % Of course, you don’t compile with the command |latex file.tex|, but |xelatex file.tex|. You get a pdf as output. Nevertheless, \XeTeX\ is not pdf\TeX, so you cannot use microtypographic extensions… :(
 % 
 % If you have any trouble using \XeLaTeX, just mail me!
+% \newpage
+% \section*{todo}
+% Here a section with some ideas that could be implemented.
+% \begin{itemize}
+% \item Use |²| as square in mathmode and possibly |¹| as |\footnote|?
+% \item
+% \end{itemize}
 % \Finale
 \endinput

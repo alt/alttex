@@ -40,15 +40,42 @@ This document shows applications of the possibilities the |alttex| packages offe
 
 There are three columns: The left one shows the input code using |alttex|, the middle one shows the corresponding ”normal“ input, and on the right-hand side there is the output of that code. The output is written in the code on the left-hand side, so I am not cheating here…\vspace{2cm}
 
+\sample{noescape}
+\noescape
+\begin{verbatim}
+This is a short text including
+some characters like an @,
+a §, 100% unescaped, even {}
+and ~ or a &
+without a backslash.
+\end{verbatim}
+\vfill
+\oldescape
+\begin{verbatim}
+This is a short text including
+some characters like an @,
+a §, 100\% unescaped, even \{\}
+and \textasciitilde\ or a
+\& without a backslash.
+\end{verbatim}
+\vfill
+\noescape
+This is a short text including
+some characters like an @,
+a §, 100% unescaped, even {}
+and ~ or a &
+without a backslash.
+\oldescape
+\endsample
 \makealtmath
 
 \sample{unicode math}
-|\[∫_{-∞}^∞\]|
+|\[∫_{-∞}^∞ ∀\]|
 
 \ \vfill
 |\[\int_{-\infty}^\infty\]|
 \ \vfill
-\[∫_{-∞}^∞\]
+\[∫_{-∞}^∞ ∀\]\d
 \endsample
 
 \sample{itemize}
@@ -121,6 +148,30 @@ A short sample text
   ² second deeper item
   \end{enumerate}
 \end{enumerate}
+\endsample
+
+\sample{huge display math}
+\begin{verbatim}
+\begin{hugedisplaymath}
+E = mc^2
+\end{hugedisplaymath}
+\[E = mc^2\]
+\end{verbatim}
+\vfill
+\begin{verbatim}
+\Huge
+\[ E = mc^2\]
+\normalsize
+\[E = mc^2\]
+\end{verbatim}
+\vfill
+\begin{hugedisplaymath}
+E = mc^2
+\end{hugedisplaymath}
+\[E = mc^2\]
+
+
+
 
 \endsample
 \end{document}
