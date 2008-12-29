@@ -32,7 +32,7 @@
   }
   \endinput
 \fi
-
+\usepackage[english]{babel}
 \usepackage{todonotes}
 
 \title{The \textsf{alttex} package}
@@ -46,7 +46,7 @@
 %
 % \fi
 % 
-% This is the package |alttex| which will try to give an experimental new way to write \XeLaTeX\ code. So far it is mostly done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
+% This is the package |alttex| which will try to give an experimental new way to write \XeLaTeX{}\footnote{If you don’t know about \XeLaTeX, see the appendix.\ref{xelatex}} code. So far it is mostly done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
 % \tableofcontents
 % \newpage
 % \section{introduction}
@@ -110,6 +110,7 @@
 %    \begin{macrocode}
 \RequirePackage{exscale}
 \RequirePackage{ifxetex}
+\RequirePackage{hhline}
 \ifxetex
 \typeout{Loading XeTeX, everything’s fine.}
 \else
@@ -143,13 +144,14 @@
   %\catcode`\}= 11%
   \catcode`\$= 11%
   \catcode`\~= 11%
-  \makeatletter% I just noticed this is not necessary… but I’ll leave it for some strange \thin@gs or so…
+  \makeatletter%
   \catcode`\%= 11
 }
-%    \end{macrocode}l
+%    \end{macrocode}
+% The |\makeatletter| is not necessary. But it fitted into this line, so I will leave it here.
 % \end{macro}
 % \begin{macro}{\oldescape}
-% Of course this has to be reset when doing anything like formula, tabular etc. Maybe I will be able to change the behaviour automatically. Thas idea has been inspired by a discussion on the Con\TeX{}t mailinglist.
+% Of course this has to be reset when doing anything like formula, tabular etc. Maybe I will be able to change the behaviour automatically. This idea has been inspired by a discussion on the Con\TeX{}t mailinglist.
 %    \begin{macrocode}
 \def\oldescape{
   \catcode`\%= 14%
@@ -165,13 +167,23 @@
 }
 %    \end{macrocode}
 % \end{macro}
-% \subsection{tables}
-% The way one has to type extensive tables is quite complex – and the resulting code is often not really readable. I don’t have an idea how to change this, but I’m thinking about it. Just a reminder to myself… mail me any suggestions for this!
+% \subsection{tabular}
+% The way one has to type extensive tables is quite complex – and the resulting code is often not really readable. I don’t have good ideas how to change this, but I’m thinking about it. Just a reminder to myself… mail me any suggestions for this!
+%
+% This will be the first attempt to make tabulars easier: Mostly you want an |\hline| after an |\\|. So let’s try something like:\todo{I will try to implement cool stuff from the \textsf{hhline}-package.}
+% \begin{macro}{\§ for \\\hhline}
+% Type |\§| at the end of a line, and you get an |\hhline|:
+%    \begin{macrocode}
+\def\§{\\ \hhline}
+%    \end{macrocode}
+% This is shurely not a good symbol for this purpose, but I don’t have a better idea so far. At least it’s a ”bar“, so one can guess what it should do. 
+% \end{macro}
+% 
 % \section{Math stuff}
 % \subsection{braces}
 % \begin{macro}{\newbraces}
 % \begin{macro}{\oldbraces}
-% Now this is something most \LaTeX-beginners don’t recognize and wonder why the formula looks so ugly: The braces () do not fit to the hight of the formula. This can be achieved by putting |\left| and |\right| in front of the braces. But actually, this is annoying! In almost any case you want this behaviour, so this should be the standard. So we redefine the way braces are handled. With |\newbraces| the ( ) always fit. If you prefer the normal \LaTeX\ way, use |\oldbraces| to reset everything. This new behaviour should be extended to other characters like \verb~| [ { <~ and so on. Maybe in version 0.0.1…
+% Now this is something most \LaTeX-beginners don’t recognize and wonder why the formula looks so ugly: The braces () do not fit to the hight of the formula. This can be achieved by putting |\left| and |\right| in front of the braces. But actually, this is annoying! In almost any case you want this behaviour, so this should be the standard. So we redefine the way braces are handled. With |\newbraces| the ( ) always fit. If you prefer the normal \LaTeX\ way, use |\oldbraces| to reset everything. This new behaviour should be extended to other characters like \verb~| [ { <~ and so on. Maybe in some later version.
 % 
 % I would have never been able to implement this without the help of the mailinglist members of |tex-d-l@listserv.dfn.de|!
 % 
@@ -222,7 +234,7 @@
 %    \end{macrocode}
 % \end{environment}
 % 
-% \section{itemize and similar things}
+% \section{Lists and such things}
 % \subsection{itemize with a single character}
 % \begin{macro}{• instead of \item}
 % Here we use an active character (mostly a unicode character bullet •) for the whole construct. And another one for nested itemizations (like a triangular bullet \nolinebreak{\fontspec[Scale=0.8]{DejaVu Sans Mono}‣}).
@@ -233,8 +245,6 @@
 % \begin{macro}{\newitemii}
 % The following ugly peace of code is writen by me, defining the conditional insertion of the |\begin{itemize}|. This will be assigned to an active character using |\makeitemi| and |\makeitemii|, respectively.
 %    \begin{macrocode}
-\def\notinside{}
-\def\inside{}
 \let\insideitemizei\outside
 \let\insideitemizeii\outside
 
@@ -321,8 +331,9 @@
 \makeatother
 %    \end{macrocode}
 % \end{macro}
-% \begin{macro}{¹²³}
-% And we do just the same stuff with |\enumerate|. But here we take the |¹| as first level item, the |²| as second level etc. This may be confusing some way, but just try it.
+% \subsection{enumerate with a single character}
+% \begin{macro}{¹, ²}
+% And we do just the same stuff with |\enumerate|. But here we take the character |¹| as first level item, the |²| as second level etc. This may be confusing some way, but just try it.
 %
 % For the implementation: copy-pasted the code above, nothing interesting so far.
 %    \begin{macrocode}
@@ -397,9 +408,17 @@
 \makeenumi¹
 \makeenumii²
 %    \end{macrocode}
-
-
-% And that’s it. Happy alt\TeX{}ing!
-% \todo{Tabelle, blindtext}
+% And that’s it.\begin{center}\Large Happy alt\TeX{}ing!\end{center}
+% \appendix
+% \section*{A very short introduction to \XeLaTeX}
+% \label{xelatex}
+  % Everything you have to know about \XeLaTeX\ to use this package: Write your \LaTeX\ file just as you are used to. But save it as utf8-encoded, \emph{do not} use \\
+%|\usepackage{inputenc}| and |\usepackage{fontenc}|,\\
+% but \emph{do use}\\
+% |\usepackage{xltxra}|.\\
+% This loads some files that provide all the cool stuff \XeLaTeX\ offers. You don’t have to take care of letters \TeX\ would not understand – \XeTeX\ understands every character you type. But sometimes the font may not have the symbol for this – then you can use |\fontspec{fontname}|, where |fontname| is the name of a font on your system, e.\,g. |Arno Pro|, |Linux Libertine| etc.
+% Of course, you don’t compile with the command |latex file.tex|, but |xelatex file.tex|. You get a pdf as output. Nevertheless, \XeTeX\ is not pdf\TeX, so you cannot use microtypographic extensions… :(
+% 
+% If you have any trouble using \XeLaTeX, just mail me!
 % \Finale
 \endinput

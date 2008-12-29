@@ -25,6 +25,7 @@
 }
 \RequirePackage{exscale}
 \RequirePackage{ifxetex}
+\RequirePackage{hhline}
 \ifxetex
 \typeout{Loading XeTeX, everything’s fine.}
 \else
@@ -51,7 +52,7 @@
   %\catcode`\}= 11%
   \catcode`\$= 11%
   \catcode`\~= 11%
-  \makeatletter% I just noticed this is not necessary… but I’ll leave it for some strange \thin@gs or so…
+  \makeatletter%
   \catcode`\%= 11
 }
 \def\oldescape{
@@ -66,6 +67,7 @@
   \catcode`\~= 13%
   \makeatother%
 }
+\def\§{\\ \hhline}
 \makeatletter
 \def\resetMathstrut@{%
     \setbox\z@\hbox{%
@@ -100,8 +102,6 @@
 \def\endhugedisplaymath{
   \end{equation*}
 }
-\def\notinside{}
-\def\inside{}
 \let\insideitemizei\outside
 \let\insideitemizeii\outside
 
@@ -237,7 +237,7 @@
 \makeitemii‣
 \makeenumi¹
 \makeenumii²
-
+  % Everything you have to know about \XeLaTeX\ to use this package: Write your \LaTeX\ file just as you are used to. But save it as utf8-encoded, \emph{do not} use \\
 \endinput
 %%
 %% End of file `alttex.sty'.
