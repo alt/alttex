@@ -38,6 +38,9 @@
 \title{The \textsf{alttex} package}
 \author{Arno L. Trautmann\thanks{arno.trautmann@gmx.de}}
 \date{Version 0.a.1 \today}
+
+\def\deja{\fontspec{DejaVu Sans Mono}} % to get some fancy characters
+
 \begin{document}
 \maketitle
 \DocInput{alttex.dtx}
@@ -216,7 +219,7 @@
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
-
+% \subsection{huge display math}
 % \begin{environment}{hugedisplaymath}
 % Sometimes, especially in presentations, you might need an really big formula. Imagine two hours of struggle with transformations—and finally there is the beautiful formula. Now you can say\\
 % \begin{center}|\begin{hugedisplaymath} E = mc^2 \end{hugedisplaymath}| \end{center}
@@ -234,6 +237,47 @@
 %    \end{macrocode}
 % \end{environment}
 % 
+% \subsection{unicode math}
+% Typing math in \TeX{} is no great fun – you have to write things like |\int| instead of {\deja ∫} and so on. Have a look at the following formula:
+% 
+% |\int_\infty^\infty \sum_a|
+% 
+% {\deja ∫}
+% The code again is stolen and I don’t understand, why it does what it does, but it does it: The first argument is the character you want to use for “unicode math“, the second one is the \TeX-command.
+%    \begin{macrocode}
+\makeatletter
+\def\altmath#1#2{%
+  \expandafter\ifx\csname cc\string#1\endcsname\relax
+    \add@special{#1}%
+    \expandafter
+    \xdef\csname cc\string#1\endcsname{\the\catcode`#1}%
+    \begingroup
+      \catcode`\~\active  \lccode`\~`#1%
+      \lowercase{%
+      \global\expandafter\let
+         \csname ac\string#1\endcsname~%
+      \expandafter\gdef\expandafter~\expandafter{#2}}%
+    \endgroup
+    \global\catcode`#1\active
+  \else
+  \fi
+}
+\makeatother
+%    \end{macrocode}
+% We will make a switch to turn this stuff on or off, so it does not interfere with the unicode-math package. This list will increase by time. If you are missing a symbol, just send me the |\altmath{X}{\Xcode}|-line. I would be very thankful if anybody could send me a whole list of symbols!
+%    \begin{macrocode}
+\def\makealtmath{
+\altmath{α}\alpha
+\altmath{β}\beta
+\altmath{γ}\gamma
+\altmath{δ}\delta
+\altmath{⇒}\Rightarrow
+\altmath{⇐}\Leftarrow
+\altmath{⇔}\Leftrightarrow
+\altmath{∫}{\int}
+}
+%    \end{macrocode}
+% There will be an |\makenormalmath|-switch as well.
 % \section{Lists and such things}
 % \subsection{itemize with a single character}
 % \begin{macro}{• instead of \item}
@@ -245,6 +289,8 @@
 % \begin{macro}{\newitemii}
 % The following ugly peace of code is writen by me, defining the conditional insertion of the |\begin{itemize}|. This will be assigned to an active character using |\makeitemi| and |\makeitemii|, respectively.
 %    \begin{macrocode}
+\def\outside{o}
+\def\inside{i}
 \let\insideitemizei\outside
 \let\insideitemizeii\outside
 
@@ -337,6 +383,8 @@
 %
 % For the implementation: copy-pasted the code above, nothing interesting so far.
 %    \begin{macrocode}
+\def\inside{i}
+\def\outside{o}
 \let\insideenumi\outside
 \let\insideenumii\outside
 
@@ -409,7 +457,7 @@
 \makeenumii²
 %    \end{macrocode}
 % And that’s it.\begin{center}\Large Happy alt\TeX{}ing!\end{center}
-% \appendix
+% \newpage\appendix
 % \section*{A very short introduction to \XeLaTeX}
 % \label{xelatex}
   % Everything you have to know about \XeLaTeX\ to use this package: Write your \LaTeX\ file just as you are used to. But save it as utf8-encoded, \emph{do not} use \\

@@ -92,7 +92,6 @@
   \mathcode`("8000
   \mathcode`)"8000
 }
-
 \def\hugedisplaymath{
   \makeatletter
     \makeatother
@@ -102,6 +101,36 @@
 \def\endhugedisplaymath{
   \end{equation*}
 }
+\makeatletter
+\def\altmath#1#2{%
+  \expandafter\ifx\csname cc\string#1\endcsname\relax
+    \add@special{#1}%
+    \expandafter
+    \xdef\csname cc\string#1\endcsname{\the\catcode`#1}%
+    \begingroup
+      \catcode`\~\active  \lccode`\~`#1%
+      \lowercase{%
+      \global\expandafter\let
+         \csname ac\string#1\endcsname~%
+      \expandafter\gdef\expandafter~\expandafter{#2}}%
+    \endgroup
+    \global\catcode`#1\active
+  \else
+  \fi
+}
+\makeatother
+\def\makealtmath{
+\altmath{α}\alpha
+\altmath{β}\beta
+\altmath{γ}\gamma
+\altmath{δ}\delta
+\altmath{⇒}\Rightarrow
+\altmath{⇐}\Leftarrow
+\altmath{⇔}\Leftrightarrow
+\altmath{∫}{\int}
+}
+\def\outside{o}
+\def\inside{i}
 \let\insideitemizei\outside
 \let\insideitemizeii\outside
 
@@ -174,6 +203,8 @@
     \xdef\@sanitize{\@sanitize}%
   \endgroup}
 \makeatother
+\def\inside{i}
+\def\outside{o}
 \let\insideenumi\outside
 \let\insideenumii\outside
 
