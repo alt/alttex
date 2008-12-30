@@ -290,20 +290,24 @@
 % 
 % \begin{macro}{\newitemi}
 % \begin{macro}{\newitemii}
-% The following ugly peace of code is writen by me, defining the conditional insertion of the |\begin{itemize}|. This will be assigned to an active character using |\makeitemi| and |\makeitemii|, respectively.
+% The following ugly peace of code is writen by me, defining the conditional insertion of the |\begin{itemize}|. This will be assigned to an active character using |\makeitemi| and |\makeitemii|, respectively.\todo{insideitemize wird nicht zurückgesetzt!!}
 %    \begin{macrocode}
 \def\outside{o}
 \def\inside{i}
 \let\insideitemizei\outside
 \let\insideitemizeii\outside
-
+%    \end{macrocode}
+% The end of itemizei and itemizeii:
+%    \begin{macrocode}
+\def\•{\end{itemize}}
+\def\‣{\end{itemize}}
 \def\newitemi{
   \ifx\insideitemizei\inside
     \expandafter\item%
   \else
     \begin{itemize}
-      \global\let\insideitemizei\inside
-      \expandafter\item%
+    \let\insideitemizei\inside
+    \expandafter\item%
   \fi
 }
 
@@ -386,8 +390,6 @@
 %
 % For the implementation: copy-pasted the code above, nothing interesting so far.
 %    \begin{macrocode}
-\def\inside{i}
-\def\outside{o}
 \let\insideenumi\outside
 \let\insideenumii\outside
 

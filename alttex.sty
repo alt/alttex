@@ -136,14 +136,15 @@
 \def\inside{i}
 \let\insideitemizei\outside
 \let\insideitemizeii\outside
-
+\def\•{\end{itemize}}
+\def\‣{\end{itemize}}
 \def\newitemi{
   \ifx\insideitemizei\inside
     \expandafter\item%
   \else
     \begin{itemize}
-      \global\let\insideitemizei\inside
-      \expandafter\item%
+    \let\insideitemizei\inside
+    \expandafter\item%
   \fi
 }
 
@@ -206,8 +207,6 @@
     \xdef\@sanitize{\@sanitize}%
   \endgroup}
 \makeatother
-\def\inside{i}
-\def\outside{o}
 \let\insideenumi\outside
 \let\insideenumii\outside
 
