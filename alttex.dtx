@@ -98,7 +98,6 @@
 %    \begin{macrocode}
 \let\oldpackage\usepackage
 \def\usepackage#1{
-  \AtBeginDocument{hallo}
   \IfFileExists{#1.sty}{
     \oldpackage{#1}
   }{
@@ -171,11 +170,11 @@
 %    \end{macrocode}
 % \end{macro}
 % \subsection{tabular}
-% The way one has to type extensive tables is quite complex – and the resulting code is often not really readable. I don’t have good ideas how to change this, but I’m thinking about it. Just a reminder to myself… mail me any suggestions for this!
+% The way one has to type extensive tabulars is quite complex – and the resulting code is often not easy to read. I don’t have good ideas how to change this, but I’m thinking about it. Mail me any suggestions for this!
 %
 % This will be the first attempt to make tabulars easier: Mostly you want an |\hline| after an |\\|. So let’s try something like:\todo{I will try to implement cool stuff from the \textsf{hhline}-package.}
 % \begin{macro}{\§ for \\\hhline}
-% Type |\§| at the end of a line, and you get an |\hhline|:
+% Type |\§| at the end of a line, and you get an |\hhline|. Type |\=| to get a double line
 %    \begin{macrocode}
 \def\§{\\ \hhline}
 %    \end{macrocode}
@@ -188,7 +187,7 @@
 % \begin{macro}{\oldbraces}
 % Now this is something most \LaTeX-beginners don’t recognize and wonder why the formula looks so ugly: The braces () do not fit to the hight of the formula. This can be achieved by putting |\left| and |\right| in front of the braces. But actually, this is annoying! In almost any case you want this behaviour, so this should be the standard. So we redefine the way braces are handled. With |\newbraces| the ( ) always fit. If you prefer the normal \LaTeX\ way, use |\oldbraces| to reset everything. This new behaviour should be extended to other characters like \verb~| [ { <~ and so on. Maybe in some later version.
 % 
-% I would have never been able to implement this without the help of the mailinglist members of |tex-d-l@listserv.dfn.de|!
+% I would have never been able to implement this without the help of the mailinglist members of |tex-d-l@listserv.dfn.de|!\todo{The newbraces does \emph{not} work at the moment!}
 % 
 % The redefinition of |\mathstrut| is necessary when using amsmath (you will use amsmath when typesetting formulae, won’t you?), because the hight of formulae is determinated by the hight of a brace. But using ( ) as |\active| characters, we need another brace here. So we take |[|. This will probably also change. But the code is working fine for ( ).\todo{Maybe one could ”temporarily hardcode“ the hight of [ and then use this…}
 %    \begin{macrocode}
@@ -203,6 +202,7 @@
 }
 \makeatother
 
+
 \edef\oldbraces{
   \mathcode`(\the\mathcode`(
   \mathcode`)\the\mathcode`)
@@ -211,8 +211,8 @@
   \catcode`(\active \xdef({\left\string(}
   \catcode`)\active \xdef){\right\string)}
 \endgroup
-
 \def\newbraces{
+
   \mathcode`("8000
   \mathcode`)"8000
 }

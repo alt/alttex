@@ -16,7 +16,6 @@
 \RequirePackage{amsmath}
 \let\oldpackage\usepackage
 \def\usepackage#1{
-  \AtBeginDocument{hallo}
   \IfFileExists{#1.sty}{
     \oldpackage{#1}
   }{
@@ -87,8 +86,8 @@
   \catcode`(\active \xdef({\left\string(}
   \catcode`)\active \xdef){\right\string)}
 \endgroup
-
 \def\newbraces{
+
   \mathcode`("8000
   \mathcode`)"8000
 }

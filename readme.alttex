@@ -1,5 +1,5 @@
 This is an experimental LaTeX package, using the XeTeX engine, some XeLateX packages and unicode features to offer a new way of working with LaTeX. Well, that’s exaggerated, but still it might be a nice toy.
-At the moment, the package is growing dayly. Soon there will be an example file showing the usage of the ideas presented here.
+At the moment, the package is growing daily. Soon there will be an example file showing the usage of the ideas presented here.
 Read the pdf by clicking on ”raw“. The .pdf may not always be up-to-date; the .dtx-file is the actual reference!
 To compile the package: download the .dtx and .ins, put them in a directory and load the alttex.ins with xelatex. Then you get the alttex.sty which you can put anywhere where LaTeX will find it.
 
