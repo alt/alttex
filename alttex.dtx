@@ -301,6 +301,7 @@
 %    \begin{macrocode}
 \def\•{\end{itemize}}
 \def\‣{\end{itemize}}
+
 \def\newitemi{
   \ifx\insideitemizei\inside
     \expandafter\item%
@@ -316,7 +317,7 @@
     \expandafter\item%
   \else
     \begin{itemize}
-      \global\let\insideitemizeii\inside
+      \let\insideitemizeii\inside
       \expandafter\item%
   \fi
 }
