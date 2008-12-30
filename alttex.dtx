@@ -391,6 +391,10 @@
 %
 % For the implementation: copy-pasted the code above, nothing interesting so far.
 %    \begin{macrocode}
+\def\¹{\end{enumerate}}
+\def\²{\end{enumerate}}
+
+
 \let\insideenumi\outside
 \let\insideenumii\outside
 
@@ -399,7 +403,7 @@
     \expandafter\item%
   \else
     \begin{enumerate}
-      \global\let\insideenumi\inside
+      \let\insideenumi\inside
       \expandafter\item%
   \fi
 }
@@ -409,7 +413,7 @@
     \expandafter\item%
   \else
     \begin{enumerate}
-      \global\let\insideenumii\inside
+      \let\insideenumii\inside
       \expandafter\item%
   \fi
 }
