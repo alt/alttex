@@ -26,7 +26,9 @@
   ! If you want to have support for [utf8]inputenc,^^J%
   ! please contact the author.^^J%
   ! If you want to use LuaLaTeX, give it a try:^^J%
-  ! comment out the lines 32, 33, 35–43.^^J%
+  ! You have to take away everything that requires XeTeX.^^J%
+  ! That is xltxtra and every \fontspec call. Also you have ^^J%
+  ! to define a dummy for \XeLaTeX…^^J%
   ! Please e-mail me the result of your experiences!^^J%
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
   }
@@ -37,18 +39,34 @@
 
 \title{The \textsf{alttex} package}
 \author{Arno L. Trautmann\thanks{arno.trautmann@gmx.de}}
-\date{Version 0.a.1 \today}
-
-\def\deja{\fontspec{DejaVu Sans Mono}} % to get some fancy characters
+\date{Version 0.a.2 \today}
 
 \begin{document}
-\maketitle
 \DocInput{alttex.dtx}
 \end{document}
 %</driver>
 %
 % \fi
+% \iffalse metacomment:
+% The following definition has to be made at this strange position for some reasons. It checks whether the font DejaVu Sans is installed on your system or not. If so, it will be used to display some characters the lmodern font does not have. If the font is not present, you will not see the symbol, but your .sty file still will be fine.
+% end metacomment \fi
+% \newif\ifFontIsAvailable
+% \def\testFontAvailability#1{
+%   \count255=\interactionmode
+%   \batchmode
+%   \let\preload=\nullfont
+%   \font\preload="#1" at 10pt
+%   \ifx\preload\nullfont \FontIsAvailablefalse
+%   \else \FontIsAvailabletrue \fi
+%   \interactionmode=\count255
+% }
+% \def\setdeja{\setmonofont[Scale=0.85]{DejaVu Sans Mono}}
+% \testFontAvailability{DejaVu Sans}
+% \ifFontIsAvailable
+%   \setdeja\else
+%   {}\fi
 % 
+% \maketitle
 % This is the package |alttex| which will try to give an experimental new way to write \XeLaTeX{}\footnote{If you don’t know about \XeLaTeX, see the appendix.\ref{xelatex}} code. So far it is mostly done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
 % \tableofcontents
 % \newpage
@@ -68,8 +86,8 @@
 % \end{itemize}
 % \end{verbatim}
 % 
-% Using this package and having a superior keyboard layout\footnote{E.\,g. the ergonomic layout NEO.}, you can simply write:\footnote{The lmodern font I’m using here does not have the symbol for the inner item , so we change to DejaVu Sans Mono here.}
-% {\setmonofont[Scale=0.85]{DejaVu Sans Mono}
+% Using this package and having a superior keyboard layout\footnote{E.\,g. the ergonomic layout Neo: \url{http://neo-layout.org/}}, you can simply write:\footnote{The lmodern font I’m using here does not have the symbol for the inner item , so we change to DejaVu Sans Mono here.}
+% 
 % \begin{verbatim}
 % This is the normal text, then comes the itemization:
 % 
@@ -82,7 +100,7 @@
 % • and the outer itemize goes on…
 % 
 % And your normal text goes on…
-% \end{verbatim}}
+% \end{verbatim}
 % Well, actually I’m lying now because this is not fully implemented so far. But it’s the aim of this package to provide this – besides many, many other funny and cool things. The aim is to offer a more „wysiwyg“ way, without loosing anything of logical markup. One still can re|\def|ine the |•| if he doesn’t like the way his items look.
 % I have just started to write the package, there will be much more stuff here in the future.
 % 
@@ -174,9 +192,10 @@
 %
 % This will be the first attempt to make tabulars easier: Mostly you want an |\hline| after an |\\|. So let’s try something like:\todo{I will try to implement cool stuff from the \textsf{hhline}-package.}
 % \begin{macro}{\§ for \\\hhline}
-% Type |\§| at the end of a line, and you get an |\hhline|. Type |\=| to get a double line
+% Type |\–| (an en-dash) at the end of a line, and you get an |\hhline|. Type |\=| to get a double line
 %    \begin{macrocode}
-\def\§{\\ \hhline}
+\def\–{\hhline}
+\def\={\hhline}
 %    \end{macrocode}
 % This is shurely not a good symbol for this purpose, but I don’t have a better idea so far. At least it’s a ”bar“, so one can guess what it should do. 
 % \end{macro}
@@ -238,11 +257,11 @@
 % \end{environment}
 % 
 % \subsection{unicode math}
-% Typing math in \TeX{} is no great fun – you have to write things like |\int| instead of {\deja ∫} and so on. Have a look at the following formula:
+% Typing math in \TeX{} is no great fun – you have to write things like |\int| instead of |∫| and so on. Have a look at the following formula:
 % 
 % |\int_\infty^\infty \sum_a|
 % 
-% {\deja ∫}
+% {∫}
 % The code again is stolen and I don’t understand, why it does what it does, but it does it: The first argument is the character you want to use for “unicode math“, the second one is the \TeX-command.
 %    \begin{macrocode}
 \makeatletter
