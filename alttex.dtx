@@ -35,7 +35,10 @@
   \endinput
 \fi
 \usepackage[english]{babel}
-\usepackage{todonotes}
+\usepackage{
+todonotes,
+lmodern
+}
 
 \title{The \textsf{alttex} package}
 \author{Arno L. Trautmann\thanks{arno.trautmann@gmx.de}}
@@ -61,17 +64,18 @@
 %   \interactionmode=\count255
 % }
 % \def\setdeja{\setmonofont[Scale=0.85]{DejaVu Sans Mono}}
+% \def\dejawarning{}
 % \testFontAvailability{DejaVu Sans}
 % \ifFontIsAvailable
 %   \setdeja\else
-%   {}\fi
+%   \def\dejawarning{\footnotetext{\bf You do not have the font DejaVu Sans Mono installed. Get it from http://dejavu-fonts.org.\\ Your .sty file created will be fine, but in the pdf there will be some symbols missing.}}\fi
 % 
 % \maketitle
-% This is the package |alttex| which will try to give an experimental new way to write \XeLaTeX{}\footnote{If you don’t know about \XeLaTeX, see the appendix.\ref{xelatex}} code. So far it is mostly done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
+% \dejawarning This is the package |alttex| which will try to give an experimental new way to write \XeLaTeX{}\footnote{If you don’t know about \XeLaTeX, see the appendix.\ref{xelatex}} code. So far it is mostly done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
 % \tableofcontents
 % \newpage
 % \section{introduction}
-% The problem I have with \LaTeX\footnote{I’ll write \LaTeX{} instead of \XeLaTeX—saves me two keystrokes. Most of the code below \emph{only} works with \XeLaTeX. If you need support for [utf8]inputenc or Lua\LaTeX, please contact the author.}  is the antique way of typing. Because most people still use a hopelessly outdated keyboard layout („qwerty“ or slightly adapted versions of that), \LaTeX{} doesn’t make use of some cool features. I’m not talking about writing chinese or arabic text! Maybe this example will make the idea clear:
+% The problem I have with \LaTeX\footnote{I’ll write \LaTeX{} instead of \XeLaTeX—saves me two keystrokes. Most of the code below \emph{only} works with \XeLaTeX. If you need support for [utf8]inputenc or Lua\LaTeX, please contact the author.}  is the antique way of typing. Because most people still use a hopelessly outdated keyboard layout (»qwerty« or slightly adapted versions of that), \LaTeX{} doesn’t make use of some cool features. I’m not talking about writing chinese or arabic text! Maybe this example will make the idea clear:
 % 
 % In standard \LaTeX, one has to write
 % \begin{verbatim}
