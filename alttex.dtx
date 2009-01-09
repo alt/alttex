@@ -225,19 +225,17 @@ lmodern
 }
 \makeatother
 
+{\catcode`(\active \xdef({\left\string(}}
+{\catcode`)\active \xdef){\right\string)}}
+
+\def\newbraces{
+  \mathcode`("8000
+  \mathcode`)"8000
+}
 
 \edef\oldbraces{
   \mathcode`(\the\mathcode`(
   \mathcode`)\the\mathcode`)
-}
-\begingroup
-  \catcode`(\active \xdef({\left\string(}
-  \catcode`)\active \xdef){\right\string)}
-\endgroup
-\def\newbraces{
-
-  \mathcode`("8000
-  \mathcode`)"8000
 }
 %    \end{macrocode}
 % \end{macro}
@@ -304,6 +302,58 @@ lmodern
 }
 %    \end{macrocode}
 % There will be an |\makenormalmath|-switch as well.
+% \subsection{Lazy underscript and superscript}
+% \begin{macro}{_}
+% Sometimes one has to make extensive use of subscripts and superscripts, e.\,g. when typing long formulae including tensors. Then it is a bit annoying to always write the |{}|, especially when there are only two letters.
+% \todo{An underscore at the end of an inline-formula has to be ended with \} or egroup. That is not nice…}
+% 
+% First, store the actual meaning of |_| and |^| in |\oldunderscore| and |\oldhat|. \todo{The redefinition of hat does not work because TeX uses it for definition of catcodes. There has to be a really tricky way to get around that.}
+%    \begin{macrocode}
+\let\oldunderscore_\relax
+\let\oldhat^\relax
+%    \end{macrocode}
+% Now set |_| as |\active| char and define it the way we want it to behave. For this, we need the space char and end-of-line char to be an egroup char. So the underscript group is ended by space or eol and we don’t need to close it explicitly.
+%    \begin{macrocode}
+\catcode`\_=13
+\def_{%
+  \ifmmode
+    \catcode`\ =2\relax%
+    \catcode`\^^M=2\relax%
+    \expandafter\oldunderscore\bgroup%
+  \else%
+    \textunderscore%
+  \fi%
+}
+
+\iffalse
+This does not work so far…
+\catcode`\^=13
+\def^{%
+  \ifmmode
+    \catcode`\ =2\relax%
+    \catcode`\^^M=2\relax%
+    \expandafter\oldhat\bgroup%
+  \else%
+    \oldhat%
+  \fi%
+}
+\fi
+%    \end{macrocode}
+% To give the possibility to swith between normal and |alttex| behaviour, store the new underscore.
+%    \begin{macrocode}
+\let\advancedunderscore_
+%    \end{macrocode}
+% And the switches. By default, |_| is active. Type |\oldUnder| to get the normal |_|. \todo{The newUnder does not work so far.}
+%    \begin{macrocode}
+\def\oldUnder{
+  \global\catcode`\_=8\relax
+}
+\def\newUnder{
+  \global\let_\advancedunderscore
+}
+%    \end{macrocode}
+% \end{macro}
+% 
 % \section{Lists and such things}
 % \subsection{itemize with a single character}
 % \begin{macro}{• instead of \item}
@@ -325,13 +375,16 @@ lmodern
 \def\•{\end{itemize}}
 \def\‣{\end{itemize}}
 
-\def\newitemi{
-  \ifx\insideitemizei\inside
+\def\newitemi{%
+  \ifx\insideitemizei\inside%
+    \setcounter{lastitem}{0}%
     \expandafter\item%
-  \else
-    \begin{itemize}
-    \let\insideitemizei\inside
-    \expandafter\item%
+  \else%
+    \begin{itemize}%
+    \let\insideitemizei\inside%
+    \catcode`\ſ=5%
+    \catcode`\€=14%
+    \catcode`\^^M=\active\def^^M{\end{itemize}}\item €ſ
   \fi
 }
 
@@ -417,7 +470,6 @@ lmodern
 \def\¹{\end{enumerate}}
 \def\²{\end{enumerate}}
 
-
 \let\insideenumi\outside
 \let\insideenumii\outside
 
@@ -493,20 +545,23 @@ lmodern
 % \newpage\appendix
 % \section*{A very short introduction to \XeLaTeX}
 % \label{xelatex}
-  % Everything you have to know about \XeLaTeX\ to use this package: Write your \LaTeX\ file just as you are used to. But save it as utf8-encoded, \emph{do not} use \\
-%|\usepackage{inputenc}| and |\usepackage{fontenc}|,\\
-% but \emph{do use}\\
-% |\usepackage{xltxra}|.\\
-% This loads some files that provide all the cool stuff \XeLaTeX\ offers. You don’t have to take care of letters \TeX\ would not understand – \XeTeX\ understands every character you type. But sometimes the font may not have the symbol for this – then you can use |\fontspec{fontname}|, where |fontname| is the name of a font on your system, e.\,g. |Arno Pro|, |Linux Libertine| etc.
-% Of course, you don’t compile with the command |latex file.tex|, but |xelatex file.tex|. You get a pdf as output. Nevertheless, \XeTeX\ is not pdf\TeX, so you cannot use microtypographic extensions… :(
+  % Everything you have to know about \XeLaTeX\ to use this package: Write your \LaTeX\ file just as you are used to. But save it as utf8-encoded, and say
+% \begin{verbatim}\usepackage{xltxra}\end{verbatim}
+% instead of 
+% \begin{verbatim}\usepackage[latin1]{inputenc} and \usepackage[T1]{fontenc}\end{verbatim}
 % 
-% If you have any trouble using \XeLaTeX, just mail me!
+% This loads some files that provide all the cool stuff \XeLaTeX\ offers. You don’t have to take care of letters \TeX\ would not understand – \XeTeX\ understands every character you type. But sometimes the font may not have the symbol for this – then you can use |\fontspec{fontname}|, where |fontname| is the name of a font on your system, e.\,g. |Arno Pro|, |Linux Libertine|, |LT Zapfino One| etc.
+% 
+% Then, you compile your document with the command |xelatex file.tex|, instead of |xelatex file.tex| and you get a pdf as output. Nevertheless, \XeTeX\ is not an pdf\TeX\ successor, so you cannot use microtypographic extensions.
+% 
+% If you have any trouble using \XeLaTeX, just e-mail me!
 % \newpage
 % \section*{todo}
 % Here a section with some ideas that could be implemented.
 % \begin{itemize}
 % \item Use |²| as square in mathmode and possibly |¹| as |\footnote|?
-% \item
+% \item Do something to enable easy tabular
+% \item If there is only one char after an |_|, there should no space be needed.
 % \end{itemize}
 % \Finale
 \endinput

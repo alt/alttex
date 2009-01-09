@@ -79,18 +79,17 @@
 }
 \makeatother
 
+{\catcode`(\active \xdef({\left\string(}}
+{\catcode`)\active \xdef){\right\string)}}
+
+\def\newbraces{
+  \mathcode`("8000
+  \mathcode`)"8000
+}
+
 \edef\oldbraces{
   \mathcode`(\the\mathcode`(
   \mathcode`)\the\mathcode`)
-}
-\begingroup
-  \catcode`(\active \xdef({\left\string(}
-  \catcode`)\active \xdef){\right\string)}
-\endgroup
-\def\newbraces{
-
-  \mathcode`("8000
-  \mathcode`)"8000
 }
 \def\hugedisplaymath{
   \makeatletter
@@ -132,6 +131,39 @@
 \altmath{∫}\int
 \altmath{∀}\forall
 }
+\let\oldunderscore_\relax
+\let\oldhat^\relax
+\catcode`\_=13
+\def_{%
+  \ifmmode
+    \catcode`\ =2\relax%
+    \catcode`\^^M=2\relax%
+    \expandafter\oldunderscore\bgroup%
+  \else%
+    \textunderscore%
+  \fi%
+}
+
+\iffalse
+This does not work so far…
+\catcode`\^=13
+\def^{%
+  \ifmmode
+    \catcode`\ =2\relax%
+    \catcode`\^^M=2\relax%
+    \expandafter\oldhat\bgroup%
+  \else%
+    \oldhat%
+  \fi%
+}
+\fi
+\let\advancedunderscore_
+\def\oldUnder{
+  \global\catcode`\_=8\relax
+}
+\def\newUnder{
+  \global\let_\advancedunderscore
+}
 \def\outside{o}
 \def\inside{i}
 \let\insideitemizei\outside
@@ -139,13 +171,16 @@
 \def\•{\end{itemize}}
 \def\‣{\end{itemize}}
 
-\def\newitemi{
-  \ifx\insideitemizei\inside
+\def\newitemi{%
+  \ifx\insideitemizei\inside%
+    \setcounter{lastitem}{0}%
     \expandafter\item%
-  \else
-    \begin{itemize}
-    \let\insideitemizei\inside
-    \expandafter\item%
+  \else%
+    \begin{itemize}%
+    \let\insideitemizei\inside%
+    \catcode`\ſ=5%
+    \catcode`\€=14%
+    \catcode`\^^M=\active\def^^M{\end{itemize}}\item €ſ
   \fi
 }
 
@@ -274,7 +309,7 @@
 \makeitemii‣
 \makeenumi¹
 \makeenumii²
-  % Everything you have to know about \XeLaTeX\ to use this package: Write your \LaTeX\ file just as you are used to. But save it as utf8-encoded, \emph{do not} use \\
+  % Everything you have to know about \XeLaTeX\ to use this package: Write your \LaTeX\ file just as you are used to. But save it as utf8-encoded, and say
 \endinput
 %%
 %% End of file `alttex.sty'.
