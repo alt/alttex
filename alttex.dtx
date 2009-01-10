@@ -304,7 +304,7 @@ lmodern
 % There will be an |\makenormalmath|-switch as well.
 % \subsection{Lazy underscript and superscript}
 % \begin{macro}{_}
-% Sometimes one has to make extensive use of subscripts and superscripts, e.\,g. when typing long formulae including tensors. Then it is a bit annoying to always write the |{}|, especially when there are only two letters.
+% Sometimes one has to make extensive use of subscripts and superscripts, e.\,g. when typing long formulae including tensors. Then it is a bit annoying to always write the |{}|, especially when there are only two letters in the sub/superscript. So let’s try to implement the possibility to type |$F_μν F^μν $|.
 % \todo{An underscore at the end of an inline-formula has to be ended with \} or egroup. That is not nice…}
 % 
 % First, store the actual meaning of |_| and |^| in |\oldunderscore| and |\oldhat|. \todo{The redefinition of hat does not work because TeX uses it for definition of catcodes. There has to be a really tricky way to get around that.}
@@ -359,7 +359,7 @@ This does not work so far…
 % \begin{macro}{• instead of \item}
 % Here we use an active character (mostly a unicode character bullet •) for the whole construct. And another one for nested itemizations (like a triangular bullet \nolinebreak{\fontspec[Scale=0.8]{DejaVu Sans Mono}‣}).
 % 
-% This does—guess it—not work correctly so far. I’m trying to find a tricky way so that the ending character is not necessary any more. So far one has to end an itemize with something like an |—| (em-dash). There will also be a possibility to change the characters responsible for the whole action.\footnote{The triangular bullet sign does not appear here – the font is lacking it…}
+% This does—guess it—not work correctly so far. I’m trying to find a tricky way so that the ending character is not necessary any more. So far one has to end an itemize with something like an |—| (em-dash). There will also be a possibility to change the characters responsible for the whole action.
 % 
 % \begin{macro}{\newitemi}
 % \begin{macro}{\newitemii}
@@ -377,14 +377,15 @@ This does not work so far…
 
 \def\newitemi{%
   \ifx\insideitemizei\inside%
-    \setcounter{lastitem}{0}%
+    %\setcounter{lastitem}{0}%
     \expandafter\item%
   \else%
     \begin{itemize}%
     \let\insideitemizei\inside%
-    \catcode`\ſ=5%
-    \catcode`\€=14%
-    \catcode`\^^M=\active\def^^M{\end{itemize}}\item €ſ
+    %\catcode`\ſ=5%
+    %\catcode`\€=14%
+    %\catcode`\^^M=\active\def^^M{\end{itemize}}
+    \expandafter\item%
   \fi
 }
 
@@ -562,6 +563,7 @@ This does not work so far…
 % \item Use |²| as square in mathmode and possibly |¹| as |\footnote|?
 % \item Do something to enable easy tabular
 % \item If there is only one char after an |_|, there should no space be needed.
+% \item Maybe there could be a ConTeXt-version of this file.
 % \end{itemize}
 % \Finale
 \endinput

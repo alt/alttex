@@ -173,14 +173,15 @@ This does not work so far…
 
 \def\newitemi{%
   \ifx\insideitemizei\inside%
-    \setcounter{lastitem}{0}%
+    %\setcounter{lastitem}{0}%
     \expandafter\item%
   \else%
     \begin{itemize}%
     \let\insideitemizei\inside%
-    \catcode`\ſ=5%
-    \catcode`\€=14%
-    \catcode`\^^M=\active\def^^M{\end{itemize}}\item €ſ
+    %\catcode`\ſ=5%
+    %\catcode`\€=14%
+    %\catcode`\^^M=\active\def^^M{\end{itemize}}
+    \expandafter\item%
   \fi
 }
 
