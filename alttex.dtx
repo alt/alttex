@@ -204,6 +204,34 @@ lmodern
 % This is shurely not a good symbol for this purpose, but I don’t have a better idea so far. At least it’s a ”bar“, so one can guess what it should do. 
 % \end{macro}
 % 
+% \subsection{excel tabulars}
+% \begin{macro}{\exceltabular}
+% Often one usese a program to calculate tabulars of numbers. To insert it into \LaTeX, one has to do some work. Here we try to copy-paste the tabular from excel, Calc or any other program to a file mytabular.txt (or any other ending). Then you say |\exceltabular{mytabular}| (you do not need the ending, therefor it doesn’t matter) and you get the tabular in a standard format. I will extend this to enable caption, variable number of columns, kind of rule used etc. This is just a very first test. There is a small bug with the very last <enter> at the end of the |\incude|d file causing an empty row at the end.
+% 
+% This is the definition of the command:
+%    \begin{macrocode}
+\def\exceltabular#1{
+  \catcode`\^^I=4\relax
+  \eolintabular%
+  \begin{tabular}{|c|c|c|}\hline%
+  \input{#1}%
+  \end{tabular}\catcode`\^^M=5\relax
+}
+%    \end{macrocode}
+% And a little helper function to make the <enter> |\active|. Again, thanks to the people on the mailinglists.
+%    \begin{macrocode}
+\def\mybreak{\\\hline{}}
+\begingroup
+  \lccode`\~=`\^^M%
+\lowercase{%
+  \endgroup
+  \def\eolintabular{%
+    \catcode`\^^M=\active
+    \let~\mybreak
+  }%
+}
+%    \end{macrocode}
+% \end{macro}
 % \section{Math stuff}
 % \subsection{braces}
 % \begin{macro}{\newbraces}

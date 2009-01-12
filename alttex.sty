@@ -68,6 +68,23 @@
 }
 \def\–{\hhline}
 \def\={\hhline}
+\def\exceltabular#1{
+  \catcode`\^^I=4\relax
+  \eolintabular%
+  \begin{tabular}{|c|c|c|}\hline%
+  \input{#1}%
+  \end{tabular}\catcode`\^^M=5\relax
+}
+\def\mybreak{\\\hline{}}
+\begingroup
+  \lccode`\~=`\^^M%
+\lowercase{%
+  \endgroup
+  \def\eolintabular{%
+    \catcode`\^^M=\active
+    \let~\mybreak
+  }%
+}
 \makeatletter
 \def\resetMathstrut@{%
     \setbox\z@\hbox{%
