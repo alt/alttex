@@ -206,7 +206,7 @@ lmodern
 % 
 % \subsection{excel tabulars}
 % \begin{macro}{\exceltabular}
-% Often one usese a program to calculate tabulars of numbers. To insert it into \LaTeX, one has to do some work. Here we try to copy-paste the tabular from excel, Calc or any other program to a file mytabular.txt (or any other ending). Then you say |\exceltabular{mytabular}| (you do not need the ending, therefor it doesn’t matter) and you get the tabular in a standard format. I will extend this to enable caption, variable number of columns, kind of rule used etc. This is just a very first test. There is a small bug with the very last <enter> at the end of the |\incude|d file causing an empty row at the end.
+% Often one usese a program to calculate tabulars of numbers. To insert it into \LaTeX, one has to do some work. Here we try to copy-paste the tabular from excel, Calc or any other program to a file mytabular.txt (or any other ending). Then you say |\exceltabular{mytabular}| (you do not need the ending, therefor it doesn’t matter) and you get the tabular in a standard format. I will extend this to enable caption, variable number of columns, kind of rule used etc. This is just a very first test.
 % 
 % This is the definition of the command:
 %    \begin{macrocode}
@@ -215,12 +215,13 @@ lmodern
   \eolintabular%
   \begin{tabular}{|c|c|c|}\hline%
   \input{#1}%
-  \end{tabular}\catcode`\^^M=5\relax
+  \end{tabular}%
+  \catcode`\^^M=5\relax
 }
 %    \end{macrocode}
 % And a little helper function to make the <enter> |\active|. Again, thanks to the people on the mailinglists.
 %    \begin{macrocode}
-\def\mybreak{\\\hline{}}
+\def\mybreak{\\\hline}
 \begingroup
   \lccode`\~=`\^^M%
 \lowercase{%

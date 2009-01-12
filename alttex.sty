@@ -73,9 +73,10 @@
   \eolintabular%
   \begin{tabular}{|c|c|c|}\hline%
   \input{#1}%
-  \end{tabular}\catcode`\^^M=5\relax
+  \end{tabular}%
+  \catcode`\^^M=5\relax
 }
-\def\mybreak{\\\hline{}}
+\def\mybreak{\\\hline}
 \begingroup
   \lccode`\~=`\^^M%
 \lowercase{%
