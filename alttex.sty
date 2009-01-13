@@ -86,6 +86,7 @@
     \let~\mybreak
   }%
 }
+
 \makeatletter
 \def\resetMathstrut@{%
     \setbox\z@\hbox{%
@@ -186,19 +187,34 @@ This does not work so far…
 \def\inside{i}
 \let\insideitemizei\outside
 \let\insideitemizeii\outside
-\def\•{\end{itemize}}
-\def\‣{\end{itemize}}
+\def\altenditemize{
+  \if\altlastitem 1%
+    \let\altlastitem0%
+  \else%
+    \end{itemize}%
+    \let\insideitemizei\outside%
+  \fi%
+}
+
+\begingroup
+  \lccode`\~=`\^^M%
+\lowercase{%
+  \endgroup
+  \def\makeenteractive{%
+    \catcode`\^^M=\active
+    \let~\altenditemize
+}%
+}
 
 \def\newitemi{%
   \ifx\insideitemizei\inside%
-    %\setcounter{lastitem}{0}%
+    \let\altlastitem1%
     \expandafter\item%
   \else%
     \begin{itemize}%
     \let\insideitemizei\inside%
-    %\catcode`\ſ=5%
-    %\catcode`\€=14%
-    %\catcode`\^^M=\active\def^^M{\end{itemize}}
+    \let\altlastitem1%
+    \makeenteractive%
     \expandafter\item%
   \fi
 }

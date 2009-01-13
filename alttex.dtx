@@ -42,7 +42,7 @@ lmodern
 
 \title{The \textsf{alttex} package}
 \author{Arno L. Trautmann\thanks{arno.trautmann@gmx.de}}
-\date{Version 0.a.2 \today}
+\date{Version 0.a.3 \today}
 
 \begin{document}
 \DocInput{alttex.dtx}
@@ -233,6 +233,15 @@ lmodern
 }
 %    \end{macrocode}
 % \end{macro}
+% \subsection{tabbing}
+% This will be analog to the |\exceltabular|. You write your tabbing using tabs and <enter>. That’s it :)
+% \begin{macro}{\alttabbing}
+%     \begin{macrocode}
+% 
+%     \end{macrocode}
+% 
+% \end{macro}
+
 % \section{Math stuff}
 % \subsection{braces}
 % \begin{macro}{\newbraces}
@@ -267,7 +276,6 @@ lmodern
   \mathcode`)\the\mathcode`)
 }
 %    \end{macrocode}
-% \end{macro}
 % \end{macro}
 % \subsection{huge display math}
 % \begin{environment}{hugedisplaymath}
@@ -401,19 +409,34 @@ This does not work so far…
 %    \end{macrocode}
 % The end of itemizei and itemizeii:
 %    \begin{macrocode}
-\def\•{\end{itemize}}
-\def\‣{\end{itemize}}
+\def\altenditemize{
+  \if\altlastitem 1%
+    \let\altlastitem0%
+  \else%
+    \end{itemize}%
+    \let\insideitemizei\outside%
+  \fi%
+}
+
+\begingroup
+  \lccode`\~=`\^^M%
+\lowercase{%
+  \endgroup
+  \def\makeenteractive{%
+    \catcode`\^^M=\active
+    \let~\altenditemize
+}%
+}
 
 \def\newitemi{%
   \ifx\insideitemizei\inside%
-    %\setcounter{lastitem}{0}%
+    \let\altlastitem1%
     \expandafter\item%
   \else%
     \begin{itemize}%
     \let\insideitemizei\inside%
-    %\catcode`\ſ=5%
-    %\catcode`\€=14%
-    %\catcode`\^^M=\active\def^^M{\end{itemize}}
+    \let\altlastitem1%
+    \makeenteractive%
     \expandafter\item%
   \fi
 }
@@ -428,7 +451,8 @@ This does not work so far…
   \fi
 }
 %    \end{macrocode}
-% \end{macro}\end{macro}
+% \end{macro}
+% \end{macro}
 % Ok, the following code is stolen from the |shortvrb| package, and I don’t understand anything of it. But I keep on trying… nevertheless, it’s working fine, as far as I can see.
 % \begin{macro}{\makeitemi}
 % \begin{macro}{\makeitemii}
