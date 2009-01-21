@@ -40,7 +40,7 @@ todonotes,
 lmodern
 }
 
-\title{The \textsf{alttex} package}
+\title{The \textsf{alt}\TeX\ package}
 \author{Arno L. Trautmann\thanks{arno.trautmann@gmx.de}}
 \date{Version 0.a.3 \today}
 
@@ -63,7 +63,7 @@ lmodern
 %   \else \FontIsAvailabletrue \fi
 %   \interactionmode=\count255
 % }
-% \def\setdeja{\setmonofont[Scale=0.85]{DejaVu Sans Mono}}
+% \def\setdeja{\setmonofont[Scale=0.8]{DejaVu Sans Mono}}
 % \def\dejawarning{}
 % \testFontAvailability{DejaVu Sans}
 % \ifFontIsAvailable
@@ -74,7 +74,7 @@ lmodern
 % \dejawarning This is the package |alttex| which will try to give an experimental new way to write \XeLaTeX{}\footnote{If you don’t know about \XeLaTeX, see the appendix.\ref{xelatex}} code. So far it is mostly done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
 % \tableofcontents
 % \newpage
-% \section{introduction}
+% \section{Introduction}
 % The problem I have with \LaTeX\footnote{I’ll write \LaTeX{} instead of \XeLaTeX—saves me two keystrokes. Most of the code below \emph{only} works with \XeLaTeX. If you need support for [utf8]inputenc or Lua\LaTeX, please contact the author.}  is the antique way of typing. Because most people still use a hopelessly outdated keyboard layout (»qwerty« or slightly adapted versions of that), \LaTeX{} doesn’t make use of some cool features. I’m not talking about writing chinese or arabic text! Maybe this example will make the idea clear:
 % 
 % In standard \LaTeX, one has to write
@@ -82,32 +82,47 @@ lmodern
 % This is the normal text, then comes the itemization:
 % \begin{itemize}
 %   \item text for first item
-%   \item \begin{itemize}
-%         \item this is an item inside an item…
-%         \item[$\Rightarrow$] Here an item with a formula: $\int_a^b x^2 dx$
-%         \end{itemize}
+%   \item text for second item
+%     \begin{itemize}
+%       \item this is an item inside an item…
+%       \item[$\Rightarrow$] Here an item with a formula: $\int_a^b x^2 dx$
+%     \end{itemize}
 %   \item and the outer itemize goes on…
 % \end{itemize}
+% And your normal Text goes on…
 % \end{verbatim}
-% 
-% Using this package and having a superior keyboard layout\footnote{E.\,g. the ergonomic layout Neo: \url{http://neo-layout.org/}}, you can simply write:\footnote{The lmodern font I’m using here does not have the symbol for the inner item , so we change to DejaVu Sans Mono here.}
+% Using this package and having a superior keyboard layout\footnote{E.\,g. the ergonomic layout Neo: \url{http://neo-layout.org/}}, you can simply write:
 % 
 % \begin{verbatim}
 % This is the normal text, then comes the itemization:
 % 
 % • text for first item
-% • 
-% 
+% • text for second item
 %   ‣ this is an item inside an item
 %   ‣[⇒] Here an item with a formula: $∫_a^b x² dx$
-%   
+%
 % • and the outer itemize goes on…
 % 
 % And your normal text goes on…
 % \end{verbatim}
-% Well, actually I’m lying now because this is not fully implemented so far. But it’s the aim of this package to provide this – besides many, many other funny and cool things. The aim is to offer a more „wysiwyg“ way, without loosing anything of logical markup. One still can re|\def|ine the |•| if he doesn’t like the way his items look.
+% Compare this with the output, which is the same in both cases:
+% \\ \\
+% This is the normal text, then comes the itemization:
+% \begin{itemize}
+%   \item text for first item
+%   \item text for second item
+%     \begin{itemize}
+%       \item this is an item inside an item…
+%       \item[$\Rightarrow$] Here an item with a formula: $\int_a^b x^2 dx$
+%     \end{itemize}
+%   \item and the outer itemize goes on…
+% \end{itemize}
+% And your normal Text goes on…
+% \\ \\
+% The aim of this package is to offer a more intuitive, kind of „wysiwyg“ way, without loosing anything of logical markup. One still can re|\def|ine the |•| if he doesn’t like the way his items look. Also, I try to make some things easier that are annoying in everyday \TeX{}ing.
 % I have just started to write the package, there will be much more stuff here in the future.
-% 
+% \newpage
+% \section{Implementation}
 % Ok, enough blahblah, now comes the code. We begin with the uninteresting preamble stuff:
 %    \begin{macrocode}
 \ProvidesPackage{alttex}
@@ -115,8 +130,8 @@ lmodern
 \RequirePackage{amsmath}
 %    \end{macrocode}
 % \begin{macro}{\usepackage}
-% Now, this is the first highlight. It is an extremely simple and stupid approach to load missing packages on-the-fly, just like Mik\TeX{} does. We re|\def|ine the |\usepackage| and hope, it works. Only working with texlive! If you’re using Mik\TeX{}, put a
-% \begin{verbatim}  \let\usepacke\oldpackage\end{verbatim} into your preamble, \emph{directly} after loading |alttex|. If this does not work, delete the following lines from your |alttex.sty|.
+% Now, this is the first highlight. It is an extremely simple and stupid approach to load missing packages on-the-fly, just like Mik\TeX{} does. We re|\def|ine the |\usepackage| and hope, it works. This only working with texlive! If you’re using Mik\TeX{}, put a
+% \begin{verbatim}  \let\usepackage\oldpackage\end{verbatim} into your preamble, \emph{directly} after loading |alttex|. If this does not work, delete the following lines from your |alttex.sty|.
 %    \begin{macrocode}
 \let\oldpackage\usepackage
 \def\usepackage#1{
@@ -131,12 +146,12 @@ lmodern
 % So far, this code seems to be a bit buggy, but it should work anyhow.
 % 
 % Now load some nice packages and testing wether you’re running \XeLaTeX{} or not.
+% We need |exscale| to write really big formulae, and |ifxetex| to check wether one uses the correct engine. |hhline| is used for the tabular experiments.
 %    \begin{macrocode}
 \RequirePackage{exscale}
 \RequirePackage{ifxetex}
 \RequirePackage{hhline}
 \ifxetex
-\typeout{Loading XeTeX, everything’s fine.}
 \else
   \typeout{^^J%
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
@@ -148,12 +163,11 @@ lmodern
   ! Please e-mail me the result of your experiences!^^J%
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
   }
-  \errmessage{No XeLaTeX, no alttex. See the log for more information.}
+  \errmessage{The package alttex is only working with XeLaTeX.\\ See the log message for more details.}
   \endinput
 \fi
 
 %    \end{macrocode}
-% We need |exscale| to write really big formulae, and |ifxetex| to check wether one uses the correct engine.
 % \section{Textmode}
 % \subsection{no escape}
 % \begin{macro}{\noescape}
@@ -247,6 +261,8 @@ lmodern
 % \begin{macro}{\newbraces}
 % \begin{macro}{\oldbraces}
 % Now this is something most \LaTeX-beginners don’t recognize and wonder why the formula looks so ugly: The braces () do not fit to the hight of the formula. This can be achieved by putting |\left| and |\right| in front of the braces. But actually, this is annoying! In almost any case you want this behaviour, so this should be the standard. So we redefine the way braces are handled. With |\newbraces| the ( ) always fit. If you prefer the normal \LaTeX\ way, use |\oldbraces| to reset everything. This new behaviour should be extended to other characters like \verb~| [ { <~ and so on. Maybe in some later version.
+% 
+% There is another nice benefit on the second view: If you forget a ) in your formula, no-one will notice until you have the printed output. With the definition given here, you will get an \LaTeX-error so you cannot compile when ) are missing.
 % 
 % I would have never been able to implement this without the help of the mailinglist members of |tex-d-l@listserv.dfn.de|!\todo{The newbraces does \emph{not} work at the moment!}
 % 
@@ -394,20 +410,19 @@ This does not work so far…
 % \section{Lists and such things}
 % \subsection{itemize with a single character}
 % \begin{macro}{• instead of \item}
-% Here we use an active character (mostly a unicode character bullet •) for the whole construct. And another one for nested itemizations (like a triangular bullet \nolinebreak{\fontspec[Scale=0.8]{DejaVu Sans Mono}‣}).
-% 
-% This does—guess it—not work correctly so far. I’m trying to find a tricky way so that the ending character is not necessary any more. So far one has to end an itemize with something like an |—| (em-dash). There will also be a possibility to change the characters responsible for the whole action.
+% We use an active character (here it is the unicode bullat character~•) for the whole |itemize|-construct, and another one for nested itemizations (like a triangular bullet~|‣|). So far, only two-level nesting is possible, but that is okay for most cases. Deeper nesting is still possible with another |\begin{itemize}|.
 % 
 % \begin{macro}{\newitemi}
 % \begin{macro}{\newitemii}
-% The following ugly peace of code is writen by me, defining the conditional insertion of the |\begin{itemize}|. This will be assigned to an active character using |\makeitemi| and |\makeitemii|, respectively.\todo{insideitemize wird nicht zurückgesetzt!!}
+% First, we define some little helpers:
 %    \begin{macrocode}
 \def\outside{o}
 \def\inside{i}
 \let\insideitemizei\outside
 \let\insideitemizeii\outside
 %    \end{macrocode}
-% The end of itemizei and itemizeii:
+% The following code defines the conditional insertion of the |\begin{itemize}|. This will be assigned to an active character using |\makeitemi| and |\makeitemii|, respectively.
+% To end an |itemize|, just hit <enter> two times (to create a blank line). This will then insert a |\end{itemize}|. You can \emph{not} have an empty line inside an |item|; this will always end the |itemize|.
 %    \begin{macrocode}
 \def\altenditemize{
   \if\altlastitem 1%
@@ -521,19 +536,35 @@ This does not work so far…
 %
 % For the implementation: copy-pasted the code above, nothing interesting so far.
 %    \begin{macrocode}
-\def\¹{\end{enumerate}}
-\def\²{\end{enumerate}}
+\def\altendenum{
+  \if\altlastitem 1%
+    \let\altlastitem0%
+  \else%
+    \end{enumerate}%
+    \let\insideenumi\outside%
+  \fi%
+}
 
-\let\insideenumi\outside
-\let\insideenumii\outside
+\begingroup
+  \lccode`\~=`\^^M%
+\lowercase{%
+  \endgroup
+  \def\makeenteractiveenum{%
+    \catcode`\^^M=\active
+    \let~\altendenum
+}%
+}
 
-\def\newenumi{
-  \ifx\insideenumi\inside
+\def\newenumi{%
+  \ifx\insideenumi\inside%
+    \let\altlastitem1%
     \expandafter\item%
-  \else
-    \begin{enumerate}
-      \let\insideenumi\inside
-      \expandafter\item%
+  \else%
+    \begin{enumerate}%
+    \let\insideenumi\inside%
+    \let\altlastitem1%
+    \makeenteractiveenum%
+    \expandafter\item%
   \fi
 }
 
@@ -546,7 +577,6 @@ This does not work so far…
       \expandafter\item%
   \fi
 }
-
 %    \end{macrocode}
 % We use the same methods as above, still not understanding, what they are doing. Just changing two lines of code and hoping, everything will be fine.
 %    \begin{macrocode}

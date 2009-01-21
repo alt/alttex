@@ -26,7 +26,6 @@
 \RequirePackage{ifxetex}
 \RequirePackage{hhline}
 \ifxetex
-\typeout{Loading XeTeX, everything’s fine.}
 \else
   \typeout{^^J%
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
@@ -38,7 +37,7 @@
   ! Please e-mail me the result of your experiences!^^J%
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
   }
-  \errmessage{No XeLaTeX, no alttex. See the log for more information.}
+  \errmessage{The package alttex is only working with XeLaTeX.\\ See the log message for more details.}
   \endinput
 \fi
 
@@ -278,19 +277,35 @@ This does not work so far…
     \xdef\@sanitize{\@sanitize}%
   \endgroup}
 \makeatother
-\def\¹{\end{enumerate}}
-\def\²{\end{enumerate}}
+\def\altendenum{
+  \if\altlastitem 1%
+    \let\altlastitem0%
+  \else%
+    \end{enumerate}%
+    \let\insideenumi\outside%
+  \fi%
+}
 
-\let\insideenumi\outside
-\let\insideenumii\outside
+\begingroup
+  \lccode`\~=`\^^M%
+\lowercase{%
+  \endgroup
+  \def\makeenteractiveenum{%
+    \catcode`\^^M=\active
+    \let~\altendenum
+}%
+}
 
-\def\newenumi{
-  \ifx\insideenumi\inside
+\def\newenumi{%
+  \ifx\insideenumi\inside%
+    \let\altlastitem1%
     \expandafter\item%
-  \else
-    \begin{enumerate}
-      \let\insideenumi\inside
-      \expandafter\item%
+  \else%
+    \begin{enumerate}%
+    \let\insideenumi\inside%
+    \let\altlastitem1%
+    \makeenteractiveenum%
+    \expandafter\item%
   \fi
 }
 
@@ -303,7 +318,6 @@ This does not work so far…
       \expandafter\item%
   \fi
 }
-
 \makeatletter
 \def\makeenumi#1{%
   \expandafter\ifx\csname cc\string#1\endcsname\relax
