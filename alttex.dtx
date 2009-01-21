@@ -248,14 +248,12 @@ lmodern
 %    \end{macrocode}
 % \end{macro}
 % \subsection{tabbing}
-% This will be analog to the |\exceltabular|. You write your tabbing using tabs and <enter>. That’s it :)
 % \begin{macro}{\alttabbing}
-%     \begin{macrocode}
-% 
-%     \end{macrocode}
-% 
+% This will be analog to the |\exceltabular|. You write your tabbing using tabs and <enter>. That’s it :)
+%    \begin{macrocode}
+\iffalse not yet implemented!\fi
+%    \end{macrocode}
 % \end{macro}
-
 % \section{Math stuff}
 % \subsection{braces}
 % \begin{macro}{\newbraces}
@@ -292,6 +290,7 @@ lmodern
   \mathcode`)\the\mathcode`)
 }
 %    \end{macrocode}
+% \end{macro}
 % \end{macro}
 % \subsection{huge display math}
 % \begin{environment}{hugedisplaymath}
@@ -410,7 +409,7 @@ This does not work so far…
 % \section{Lists and such things}
 % \subsection{itemize with a single character}
 % \begin{macro}{• instead of \item}
-% We use an active character (here it is the unicode bullat character~•) for the whole |itemize|-construct, and another one for nested itemizations (like a triangular bullet~|‣|). So far, only two-level nesting is possible, but that is okay for most cases. Deeper nesting is still possible with another |\begin{itemize}|.
+% We use an active character (here it is the unicode bullat character~•) for the whole |itemize|-construct, and another one for nested itemizations (like a triangular bullet~|‣|). So far, only two-level nesting is possible, but that is okay for most cases. Deeper nesting is still possible with another |\begin{itemize}|.\footnote{Take care of the ending of your |itemize|! The |itemize| \emph{must} be followed by an empty line. (Do not use |\\| or |\newline|! Use two <enter>.)}
 % 
 % \begin{macro}{\newitemi}
 % \begin{macro}{\newitemii}
