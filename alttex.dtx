@@ -606,7 +606,7 @@ This does not work so far…
 % 
 % This loads some files that provide all the cool stuff \XeLaTeX\ offers. You don’t have to take care of letters \TeX\ would not understand – \XeTeX\ understands every character you type. But sometimes the font may not have the symbol for this – then you can use |\fontspec{fontname}|, where |fontname| is the name of a font on your system, e.\,g. |Arno Pro|, |Linux Libertine|, |LT Zapfino One| etc.
 % 
-% Then, you compile your document with the command |xelatex file.tex|, instead of |xelatex file.tex| and you get a pdf as output. Nevertheless, \XeTeX\ is not an pdf\TeX\ successor, so you cannot use microtypographic extensions.
+% Then, you compile your document with the command |xelatex file.tex|, instead of |latex file.tex| and you get a pdf as output. Mostly, your editor will not have a shortcut to start \XeLaTeX. In that case, you have to compile via the command line. If you know your editor well enough, you may be able to create a shortcut that will run |xelatex file.tex| for you. Notice that you will need an editor that is utf8-capable! One last warning: While \XeTeX\ is not an pdf\TeX\ successor, you cannot use microtypographic extensions. Maybe in the future there will be an implementation that uses advanced OpenType-features, but at the moment there is no microtypography possible!
 % 
 % If you have any trouble using \XeLaTeX, just e-mail me!
 % \newpage
