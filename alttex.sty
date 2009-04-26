@@ -18,14 +18,15 @@
 \def\usepackage#1{
   \IfFileExists{#1.sty}{
     \oldpackage{#1}
-  }{
+}{
     \immediate\write18{tlmgr install #1}
-  }
+}
 }
 \RequirePackage{exscale}
 \RequirePackage{ifxetex}
 \RequirePackage{hhline}
 \ifxetex
+\typeout{Loading XeTeX, everything’s fine.}
 \else
   \typeout{^^J%
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
@@ -36,8 +37,8 @@
   ! comment out the lines 32,33,35–43.^^J%
   ! Please e-mail me the result of your experiences!^^J%
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
-  }
-  \errmessage{The package alttex is only working with XeLaTeX.\\ See the log message for more details.}
+}
+  \errmessage{No XeLaTeX, no alttex. See the log for more information.}
   \endinput
 \fi
 
@@ -83,7 +84,7 @@
   \def\eolintabular{%
     \catcode`\^^M=\active
     \let~\mybreak
-  }%
+}%
 }
 
 \makeatletter
@@ -92,7 +93,7 @@
       \mathchardef\@tempa\mathcode`\[\relax
       \def\@tempb##1"##2##3{\the\textfont"##3\char"}%
       \expandafter\@tempb\meaning\@tempa \relax
-    }%
+}%
   \ht\Mathstrutbox@\ht\z@ \dp\Mathstrutbox@\dp\z@
 }
 \makeatother
@@ -277,35 +278,19 @@ This does not work so far…
     \xdef\@sanitize{\@sanitize}%
   \endgroup}
 \makeatother
-\def\altendenum{
-  \if\altlastitem 1%
-    \let\altlastitem0%
-  \else%
-    \end{enumerate}%
-    \let\insideenumi\outside%
-  \fi%
-}
+\def\¹{\end{enumerate}}
+\def\²{\end{enumerate}}
 
-\begingroup
-  \lccode`\~=`\^^M%
-\lowercase{%
-  \endgroup
-  \def\makeenteractiveenum{%
-    \catcode`\^^M=\active
-    \let~\altendenum
-}%
-}
+\let\insideenumi\outside
+\let\insideenumii\outside
 
-\def\newenumi{%
-  \ifx\insideenumi\inside%
-    \let\altlastitem1%
+\def\newenumi{
+  \ifx\insideenumi\inside
     \expandafter\item%
-  \else%
-    \begin{enumerate}%
-    \let\insideenumi\inside%
-    \let\altlastitem1%
-    \makeenteractiveenum%
-    \expandafter\item%
+  \else
+    \begin{enumerate}
+      \let\insideenumi\inside
+      \expandafter\item%
   \fi
 }
 
@@ -318,6 +303,7 @@ This does not work so far…
       \expandafter\item%
   \fi
 }
+
 \makeatletter
 \def\makeenumi#1{%
   \expandafter\ifx\csname cc\string#1\endcsname\relax
