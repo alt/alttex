@@ -11,14 +11,13 @@
 %<+package>\ProvidesPackage{alttex}[]
 %
 %<*driver>
-%\documentclass[12pt]{ltxdoc}
 % \usepackage{alttex}
 \documentclass{ltxdoc}
 \usepackage{ifxetex}
 \ifxetex
   \usepackage{xltxtra}
 \else
-  \errmessage{No XeLaTeX -> no alttex! See the log for more information.}
+  \errmessage{You need XeLaTeX to use alttex!}
   \typeout{^^J%
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
   ! This package can only be compiled with XeLaTeX.^^J%
@@ -34,12 +33,17 @@
 }
   \endinput
 \fi
-\usepackage[english]{babel}
+\usepackage[english]{polyglossia}
 \usepackage{
-todonotes,
-hyperref,
-lmodern
+  todonotes,
+  lmodern
 }
+\usepackage[%
+  pdfborder= 0 0 0,
+  colorlinks=true,
+  linkcolor= blue,
+  pdftitle=altTeX
+]{hyperref}
 
 \title{The \textsf{alttex} package}
 \author{Arno L. Trautmann\thanks{arno.trautmann@gmx.de}}
@@ -75,7 +79,7 @@ lmodern
 % \dejawarning This is the package |alttex| which will try to give an experimental new way to write \XeLaTeX{}\footnote{If you don’t know about \XeLaTeX, see the appendix.\ref{xelatex}} code. So far it is mostly done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
 % \tableofcontents
 % \newpage
-% \section{introduction}
+% \section{Introduction}
 % The problem I have with \LaTeX\footnote{I’ll write \LaTeX{} instead of \XeLaTeX—saves me two keystrokes. Most of the code below \emph{only} works with \XeLaTeX. If you need support for [utf8]inputenc or Lua\LaTeX, please contact the author.}  is the antique way of typing. Because most people still use a hopelessly outdated keyboard layout (»qwerty« or slightly adapted versions of that), \LaTeX{} doesn’t make use of some cool features. I’m not talking about writing chinese or arabic text! Maybe this example will make the idea clear:
 % 
 % In standard \LaTeX, one has to write
@@ -137,7 +141,6 @@ lmodern
 \RequirePackage{ifxetex}
 \RequirePackage{hhline}
 \ifxetex
-\typeout{Loading XeTeX, everything’s fine.}
 \else
   \typeout{^^J%
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
@@ -327,17 +330,28 @@ lmodern
 % We will make a switch to turn this stuff on or off, so it does not interfere with the unicode-math package. This list will increase by time. If you are missing a symbol, just send me the |\altmath{X}{\Xcode}|-line. I would be very thankful if anybody could send me a whole list of symbols!
 %    \begin{macrocode}
 \def\makealtmath{
-\altmath{α}\alpha
-\altmath{β}\beta
-\altmath{γ}\gamma
-\altmath{δ}\delta
+  \altmath{α}\alpha
+  \altmath{β}\beta
+  \altmath{γ}\gamma
+  \altmath{δ}\delta
 
-\altmath{⇒}\Rightarrow
-\altmath{⇐}\Leftarrow
-\altmath{⇔}\Leftrightarrow
+  \altmath{⇒}\Rightarrow
+  \altmath{⇐}\Leftarrow
+  \altmath{⇔}\Leftrightarrow
 
-\altmath{∫}\int
-\altmath{∀}\forall
+  \altmath{∫}\int
+  \altmath{∀}\forall
+
+  \altmath{₁}{_1}
+  \altmath{₂}{_2}
+  \altmath{₃}{_3}
+  \altmath{₄}{_4}
+  \altmath{₅}{_5}
+  \altmath{₆}{_6}
+  \altmath{₇}{_7}
+  \altmath{₈}{_8}
+  \altmath{₉}{_9}
+  \altmath{₀}{_0}
 }
 %    \end{macrocode}
 % There will be an |\makenormalmath|-switch as well.
@@ -392,7 +406,68 @@ This does not work so far…
 }
 %    \end{macrocode}
 % \end{macro}
+% \subsection{matrices}
+% This is a nice idea by Alexander Koch on \url{diskussion@neo-layout.org}. Using the unicode glyphs for writing matrices, we can make writing and readig of big matrices much easier. (In Neo, one can use the compose function to write the whole matrix by 4–5 keystrokes and then fill in the elements.) For example, say in the source:
+% \begin{verbatim}
+%                             ⎧a & b⎫
+%   ⎛a & b⎞      ⎡a & b⎤      ⎪c & d⎪
+%   ⎜c & d⎟  or  ⎢d & e⎥  or  ⎨e & f⎬
+%   ⎝e & f⎠      ⎣f & g⎦      ⎪g & h⎪
+%                             ⎩i & j⎭
+% \end{verbatim}
+% and the result will be a |bmatrix|, a |pmatrix| or a |\right\{ matrix \end{matrix}|, respectively. As \TeX\ is assumed to read from left-top to right-bottom, the matrices must not stand in a line, i.\,e. the following notation is \emph{not} possible:
+% \begin{verbatim}
+%     ⎛a & b⎞
+% A = ⎜c & d⎟ = B
+%     ⎝e & f⎠
+% \end{verbatim}
+% but rather you have to write
+% \begin{verbatim}
+% A = ⎛a & b⎞
+%     ⎜c & d⎟
+%     ⎝e & f⎠ = B
+% \end{verbatim}
+% If you have a suggestion how to enable the upper solution, please contact me, that would be an awesome thing!
 % 
+% One has to pay greatest attention to the different characters looking like |⎢⎥|. They are in fact \emph{different} for the three matrices! (But not in every case; I just hope the following code really works.)
+%    \begin{macrocode}
+\makeatletter
+\catcode`\⎛13
+\catcode`\⎞13
+\catcode`\⎟13
+\catcode`\⎝13
+\catcode`\⎠13
+\def⎛{\begin{pmatrix}}
+\def⎞{\\}
+\def⎝{}
+\def⎠{\end{pmatrix}}
+\def⎟{\\}
+
+\catcode`\⎡13
+\catcode`\⎤13
+\catcode`\⎥13
+\catcode`\⎣13
+\catcode`\⎦13
+\def⎥{\\}
+\def⎡{\begin{bmatrix}}
+\def⎤{\\}
+\def⎣{}
+\def⎦{\end{bmatrix}}
+
+\catcode`\⎧13
+\catcode`\⎫13
+\catcode`\⎪13
+\catcode`\⎩13
+\catcode`\⎭13
+\catcode`\⎬13
+\def⎧{\left\{\begin{matrix}}
+\def⎫{\\\@gobble}
+\def⎩{}
+\def⎭{\end{matrix}\right\}}
+\def⎪{\\\@gobble}
+\def⎬{\\\@gobble}
+%    \end{macrocode}
+% We need to |\@gobble| the next character only in this case, as the left-hand bar characters seem to be the same as the right-hand and so cause additional line breaks. This way it is robust against every strange codepoint the left-hand may have.\todo{The codepoints have to be checked very carefully! This is not what a robust solution does look like!}
 % \section{Lists and such things}
 % \subsection{itemize with a single character}
 % \begin{macro}{• instead of \item}

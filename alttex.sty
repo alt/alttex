@@ -26,7 +26,6 @@
 \RequirePackage{ifxetex}
 \RequirePackage{hhline}
 \ifxetex
-\typeout{Loading XeTeX, everything’s fine.}
 \else
   \typeout{^^J%
   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
@@ -138,17 +137,28 @@
 }
 \makeatother
 \def\makealtmath{
-\altmath{α}\alpha
-\altmath{β}\beta
-\altmath{γ}\gamma
-\altmath{δ}\delta
+  \altmath{α}\alpha
+  \altmath{β}\beta
+  \altmath{γ}\gamma
+  \altmath{δ}\delta
 
-\altmath{⇒}\Rightarrow
-\altmath{⇐}\Leftarrow
-\altmath{⇔}\Leftrightarrow
+  \altmath{⇒}\Rightarrow
+  \altmath{⇐}\Leftarrow
+  \altmath{⇔}\Leftrightarrow
 
-\altmath{∫}\int
-\altmath{∀}\forall
+  \altmath{∫}\int
+  \altmath{∀}\forall
+
+  \altmath{₁}{_1}
+  \altmath{₂}{_2}
+  \altmath{₃}{_3}
+  \altmath{₄}{_4}
+  \altmath{₅}{_5}
+  \altmath{₆}{_6}
+  \altmath{₇}{_7}
+  \altmath{₈}{_8}
+  \altmath{₉}{_9}
+  \altmath{₀}{_0}
 }
 \let\oldunderscore_\relax
 \let\oldhat^\relax
@@ -183,6 +193,41 @@ This does not work so far…
 \def\newUnder{
   \global\let_\advancedunderscore
 }
+\makeatletter
+\catcode`\⎛13
+\catcode`\⎞13
+\catcode`\⎟13
+\catcode`\⎝13
+\catcode`\⎠13
+\def⎛{\begin{pmatrix}}
+\def⎞{\\}
+\def⎝{}
+\def⎠{\end{pmatrix}}
+\def⎟{\\}
+
+\catcode`\⎡13
+\catcode`\⎤13
+\catcode`\⎥13
+\catcode`\⎣13
+\catcode`\⎦13
+\def⎥{\\}
+\def⎡{\begin{bmatrix}}
+\def⎤{\\}
+\def⎣{}
+\def⎦{\end{bmatrix}}
+
+\catcode`\⎧13
+\catcode`\⎫13
+\catcode`\⎪13
+\catcode`\⎩13
+\catcode`\⎭13
+\catcode`\⎬13
+\def⎧{\left\{\begin{matrix}}
+\def⎫{\\\@gobble}
+\def⎩{}
+\def⎭{\end{matrix}\right\}}
+\def⎪{\\\@gobble}
+\def⎬{\\\@gobble}
 \def\outside{o}
 \def\inside{i}
 \let\insideitemizei\outside
