@@ -1,53 +1,58 @@
 % \iffalse
-% This is alttex.dtx, a small experimental package.
-% 
-% This code is public domain.
-% 
-%% Author: Arno L. Trautmann, mail: arno dot trautmann at gmx dot de
-%%
-%
-%<+package|driver>
-%<+package>\NeedsTeXFormat{LaTeX2e}
-%<+package>\ProvidesPackage{alttex}[]
-%
+%% File: alttex.dtx by Arno Trautmann, mail: arno dot trautmann at gmx dot de
 %<*driver>
-% \usepackage{alttex}
+\def\nameofplainTeX{plain}
+\ifx\fmtname\nameofplainTeX\else
+  \expandafter\begingroup
+\fi
+\input docstrip.tex
+\askforoverwritefalse
+\preamble
+
+EXPERIMENTAL CODE
+
+Do not distribute this file without also distributing the
+source files specified above.
+
+Do not distribute a modified version of this file under the same name.
+
+\endpreamble
+\postamble
+\endpostamble
+\keepsilent
+\generate{\file{alttex.sty}{\from{alttex.dtx}{package}}}
+
+\ifx\fmtname\nameofplainTeX
+  \expandafter\endbatchfile
+\else
+  \expandafter\endgroup
+\fi
+
 \documentclass{ltxdoc}
 \usepackage{ifxetex}
 \ifxetex
-  \usepackage{xltxtra}
 \else
-  \errmessage{You need XeLaTeX to use alttex!}
-  \typeout{^^J%
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
-  ! This package can only be compiled with XeLaTeX.^^J%
-  ! pdfLaTeX cannot handle unicode the way it is used here.^^J%
-  ! If you want to have support for [utf8]inputenc,^^J%
-  ! please contact the author.^^J%
-  ! If you want to use LuaLaTeX, give it a try:^^J%
-  ! You have to take away everything that requires XeTeX.^^J%
-  ! That is xltxtra and every \fontspec call. Also you have ^^J%
-  ! to define a dummy for \XeLaTeX…^^J%
-  ! Please e-mail me the result of your experiences!^^J%
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
-}
+  \errmessage{This package needs XeLaTeX format.}
   \endinput
 \fi
 \usepackage[english]{polyglossia}
 \usepackage{
   todonotes,
-  lmodern
+  hyperref,
+  lmodern,
+  xltxtra
 }
-\usepackage[%
+
+\hypersetup{%
   pdfborder= 0 0 0,
   colorlinks=true,
   linkcolor= blue,
   pdftitle=altTeX
-]{hyperref}
+}
 
 \title{The \textsf{alttex} package}
 \author{Arno L. Trautmann\thanks{arno.trautmann@gmx.de}}
-\date{Version 0.a.3 \today}
+\date{Version 0.b \today}
 
 \begin{document}
 \DocInput{alttex.dtx}
@@ -95,7 +100,7 @@
 % \end{itemize}
 % \end{verbatim}
 % 
-% Using this package and having a superior keyboard layout\footnote{E.\,g. the ergonomic layout Neo: \url{http://neo-layout.org/}}, you can simply write:\footnote{The lmodern font I’m using here does not have the symbol for the inner item , so we change to DejaVu Sans Mono here.}\footnote{The Beamer package is not yet supported.}
+% Using this package and having a superior keyboard layout\footnote{E.\,g. the ergonomic layout Neo: \url{http://neo-layout.org/}}, you can simply write:\footnote{The lmodern font I’m using here does not have the symbol for the inner item , so we change to DejaVu Sans Mono here.}
 % 
 % \begin{verbatim}
 % This is the normal text, then comes the itemization:
@@ -143,14 +148,7 @@
 \ifxetex
 \else
   \typeout{^^J%
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
-  ! This package can only be compiled with XeLaTeX.^^J%
-  ! pdfLaTeX cannot handle unicode the way it is used here.^^J%
-  ! If you want to have support for [utf8]inputenc, please contact the author.^^J%
-  ! If you want to use LuaLaTeX, give it a try:^^J%
-  ! comment out the lines 32,33,35–43.^^J%
-  ! Please e-mail me the result of your experiences!^^J%
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
+    This package needs XeLaTeX format.
 }
   \errmessage{No XeLaTeX, no alttex. See the log for more information.}
   \endinput
@@ -470,14 +468,15 @@ This does not work so far…
 % We need to |\@gobble| the next character only in this case, as the left-hand bar characters seem to be the same as the right-hand and so cause additional line breaks. This way it is robust against every strange codepoint the left-hand may have.\todo{The codepoints have to be checked very carefully! This is not what a robust solution does look like!}
 % \section{Lists and such things}
 % \subsection{itemize with a single character}
+% \label{sec:itemize}
 % \begin{macro}{• instead of \item}
 % Here we use an active character (mostly a unicode character bullet •) for the whole construct. And another one for nested itemizations (like a triangular bullet \nolinebreak{\fontspec[Scale=0.8]{DejaVu Sans Mono}‣}).
 % 
-% This does—guess it—not work correctly so far. I’m trying to find a tricky way so that the ending character is not necessary any more. So far one has to end an itemize with something like an |—| (em-dash). There will also be a possibility to change the characters responsible for the whole action.
+% This works quite fine for most \LaTeX\ classes, but \emph{not for beamer}! There, the end of |itemize| has to be given explicitly. For this, just say in the preable of your document, after loading this package: |\def\•{\end{itemize}}| and use the |\•| to end the itemization.
 % 
 % \begin{macro}{\newitemi}
 % \begin{macro}{\newitemii}
-% The following ugly peace of code is writen by me, defining the conditional insertion of the |\begin{itemize}|. This will be assigned to an active character using |\makeitemi| and |\makeitemii|, respectively.\todo{insideitemize wird nicht zurückgesetzt!!}
+% The following ugly peace of code is writen by me, defining the conditional insertion of the |\begin{itemize}|. This will be assigned to an active character using |\makeitemi| and |\makeitemii|, respectively.
 %    \begin{macrocode}
 \def\outside{o}
 \def\inside{i}
@@ -673,6 +672,11 @@ This does not work so far…
 \makeenumii²
 %    \end{macrocode}
 % And that’s it.\begin{center}\Large Happy alt\TeX{}ing!\end{center}
+% \section{Known Bugs}
+% This should be a list of serious bugs. Please report any of them to me!
+% \begin{itemize}
+% \item Itemize does not work correctly in beamer. Use |\•| at the end of your itemize. (see section \ref{sec:itemize})
+% \end{itemize}
 % \newpage\appendix
 % \section*{A very short introduction to \XeLaTeX}
 % \label{xelatex}

@@ -5,12 +5,15 @@
 %% The original source files were:
 %%
 %% alttex.dtx  (with options: `package')
-%% alttex: writing alternatively
-%% Author: Arno L. Trautmann, mail: arno dot trautmann at gmx dot de
-%%
-
-\NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{alttex}[]
+%% 
+%% EXPERIMENTAL CODE
+%% 
+%% Do not distribute this file without also distributing the
+%% source files specified above.
+%% 
+%% Do not distribute a modified version of this file under the same name.
+%% 
+%% File: alttex.dtx by Arno Trautmann, mail: arno dot trautmann at gmx dot de
 \ProvidesPackage{alttex}
 
 \RequirePackage{amsmath}
@@ -28,14 +31,7 @@
 \ifxetex
 \else
   \typeout{^^J%
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
-  ! This package can only be compiled with XeLaTeX.^^J%
-  ! pdfLaTeX cannot handle unicode the way it is used here.^^J%
-  ! If you want to have support for [utf8]inputenc, please contact the author.^^J%
-  ! If you want to use LuaLaTeX, give it a try:^^J%
-  ! comment out the lines 32,33,35–43.^^J%
-  ! Please e-mail me the result of your experiences!^^J%
-  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!^^J%
+    This package needs XeLaTeX format.
 }
   \errmessage{No XeLaTeX, no alttex. See the log for more information.}
   \endinput
@@ -390,6 +386,6 @@ This does not work so far…
 \makeenumi¹
 \makeenumii²
   % Everything you have to know about \XeLaTeX\ to use this package: Write your \LaTeX\ file just as you are used to. But save it as utf8-encoded, and say
-\endinput
+%% 
 %%
 %% End of file `alttex.sty'.
