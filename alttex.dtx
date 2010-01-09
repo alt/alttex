@@ -1,14 +1,19 @@
 % \iffalse
 %% File: alttex.dtx by Arno Trautmann, mail: arno dot trautmann at gmx dot de
-%<*driver>
-\def\nameofplainTeX{plain}
-\ifx\fmtname\nameofplainTeX\else
-  \expandafter\begingroup
+%<*internal>
+\iffalse
+%</internal>
+%<*readme>
+This is the readme file.
+%</readme>
+%<*internal>
 \fi
+\begingroup
+%</internal>
+%<*batchfile>
 \input docstrip.tex
-\askforoverwritefalse
+\keepsilent
 \preamble
-
 EXPERIMENTAL CODE
 
 Do not distribute this file without also distributing the
@@ -18,25 +23,41 @@ Do not distribute a modified version of this file under the same name.
 
 \endpreamble
 \postamble
+Copyright 2008–2009 Arno Trautmann <arno.trautmann@gmx.de>
+
+Distributed under the LaTeX Project Public License,
+verson 1.3c or higher (your choice). The latest version of
+this license is at: http://www.latex-project.org/lppl.txt
+
+This work is "author-maintained" by Arno Trautmann
+
+This work conists of this file alttex3.dtx
+         and the derived files alttex3.sty
+                               alttex3.pdf
+                               sample.tex
+                           and sample.pdf.
+
 \endpostamble
-\keepsilent
-\generate{\file{alttex.sty}{\from{alttex.dtx}{package}}}
+\askforoverwritefalse
 
-\ifx\fmtname\nameofplainTeX
-  \expandafter\endbatchfile
-\else
-  \expandafter\endgroup
-\fi
-
-\documentclass{ltxdoc}
-\usepackage{ifxetex}
-\ifxetex
-\else
-  \errmessage{This package needs XeLaTeX format.}
-  \endinput
-\fi
+\generate{\file{alttex3.sty}{\from{alttex3.dtx}{alttex}}}
+%</batchfile>
+%<batchfile>\endbatchfile
+%<*internal>
+\generate{\file{alttex3.ins}{\from{alttex3.dtx}{batchfile}}}
+\nopostamble
+\generate{\file{sample.tex}{\from{alttex3.dtx}{sample}}}
+\nopreamble
+\generate{\file{README}{\from{alttex3.dtx}{readme}}}
+\endgroup
+%</internal>
+%
+%<*driver>
+\documentclass[a4paper]{ltxdoc}
+\usepackage{ifxetex,ifluatex}
 \usepackage[english]{polyglossia}
 \usepackage{
+  expl3,
   todonotes,
   hyperref,
   lmodern,
@@ -50,91 +71,121 @@ Do not distribute a modified version of this file under the same name.
   pdftitle=altTeX
 }
 
+\def\filedate{2010/01/09}
+\def\fileversion{0.c}
+
 \title{The \textsf{alttex} package}
 \author{Arno L. Trautmann\thanks{arno.trautmann@gmx.de}}
-\date{Version 0.b \today}
+\date{Version 0.c \filedate}
 
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+
+\usepackage{ifthen}
+
+%\OnlyDescription
 \begin{document}
-\DocInput{alttex.dtx}
+\maketitle
+% The following definition has to be made at this strange position for some reasons. It checks whether the font DejaVu Sans is installed on your system or not. If so, it will be used to display some characters the lmodern font does not have. If the font is not present, you will not see the symbol, but your .sty file still will be fine.
+
+\def\setdeja{\setmonofont[Scale=0.85]{DejaVu Sans Mono}}
+\def\dejawarning{}
+
+\newboolean{FontIsAvailable}
+\def\testFontAvailability#1{
+  \count255=\interactionmode
+  \batchmode
+  \let\preload=\nullfont
+  \font\preload="#1" at 10pt
+  \ifx\preload\nullfont \FontIsAvailablefalse
+  \else \FontIsAvailabletrue \fi
+  \interactionmode=\count255
+}
+
+\testFontAvailability{DejaVu Sans}
+\ifFontIsAvailable
+  \setdeja\else
+  \def\dejawarning{\footnotetext{\bf You do not have the font DejaVu Sans Mono installed. Get it from http://dejavu-fonts.org.\\ Your .sty file created will be fine, but in the pdf there will be some symbols missing.}}\fi
+
+
+
+\dejawarning
+This is the package |alttex| which will try to give an experimental new way to write \XeLaTeX{}\footnote{If you don’t know about \XeLaTeX, see the appendix.\ref{xelatex}} code. So far it is mostly done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
+\tableofcontents
+\newpage
+\part{Introduction}
+The problem I have with \LaTeX\footnote{I’ll write \LaTeX{} instead of \XeLaTeX—saves me two keystrokes. Most of the code below \emph{only} works with \XeLaTeX. If you need support for [utf8]inputenc or Lua\LaTeX, please contact the author.}  is the antique way of typing. Because most people still use a hopelessly outdated keyboard layout (»qwerty« or slightly adapted versions of that), \LaTeX{} doesn’t make use of some cool features. I’m not talking about writing chinese or arabic text! Maybe this example will make the idea clear:
+
+In standard \LaTeX, one has to write
+\begin{verbatim}
+This is the normal text, then comes the itemization:
+\begin{itemize}
+  \item text for first item
+  \item \begin{itemize}
+        \item this is an item inside an item…
+        \item[$\Rightarrow$] Here an item with a formula: $\int_a^b x^2 dx$
+        \end{itemize}
+  \item and the outer itemize goes on…
+\end{itemize}
+\end{verbatim}
+
+Using this package and having a superior keyboard layout\footnote{E.\,g. the ergonomic layout Neo: \url{http://neo-layout.org/}}, you can simply write:\footnote{The lmodern font I’m using here does not have the symbol for the inner item , so we change to DejaVu Sans Mono here.}
+
+\begin{verbatim}
+This is the normal text, then comes the itemization:
+
+• text for first item
+• 
+
+  ‣ this is an item inside an item
+  ‣[⇒] Here an item with a formula: $∫_a^b x² dx$
+  
+• and the outer itemize goes on…
+
+And your normal text goes on…
+\end{verbatim}
+Well, actually I’m lying now because this is not fully implemented so far. But it’s the aim of this package to provide this – besides many, many other funny and cool things. The aim is to offer a more „wysiwyg“ way, without loosing anything of logical markup. One still can re|\def|ine the |•| if he doesn’t like the way his items look.
+
+\StopEventually{}
+\clearpage
+
+\part{Implementation: alttex3.sty}
+
+\DocInput{alttex3.dtx}
 \end{document}
 %</driver>
-%
+%<*alttex>
 % \fi
-% \iffalse metacomment:
-% The following definition has to be made at this strange position for some reasons. It checks whether the font DejaVu Sans is installed on your system or not. If so, it will be used to display some characters the lmodern font does not have. If the font is not present, you will not see the symbol, but your .sty file still will be fine.
-% end metacomment \fi
-% \newif\ifFontIsAvailable
-% \def\testFontAvailability#1{
-%   \count255=\interactionmode
-%   \batchmode
-%   \let\preload=\nullfont
-%   \font\preload="#1" at 10pt
-%   \ifx\preload\nullfont \FontIsAvailablefalse
-%   \else \FontIsAvailabletrue \fi
-%   \interactionmode=\count255
-% }
-% \def\setdeja{\setmonofont[Scale=0.85]{DejaVu Sans Mono}}
-% \def\dejawarning{}
-% \testFontAvailability{DejaVu Sans}
-% \ifFontIsAvailable
-%   \setdeja\else
-%   \def\dejawarning{\footnotetext{\bf You do not have the font DejaVu Sans Mono installed. Get it from http://dejavu-fonts.org.\\ Your .sty file created will be fine, but in the pdf there will be some symbols missing.}}\fi
-% 
-% \maketitle
-% \dejawarning This is the package |alttex| which will try to give an experimental new way to write \XeLaTeX{}\footnote{If you don’t know about \XeLaTeX, see the appendix.\ref{xelatex}} code. So far it is mostly done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
-% \tableofcontents
-% \newpage
-% \section{Introduction}
-% The problem I have with \LaTeX\footnote{I’ll write \LaTeX{} instead of \XeLaTeX—saves me two keystrokes. Most of the code below \emph{only} works with \XeLaTeX. If you need support for [utf8]inputenc or Lua\LaTeX, please contact the author.}  is the antique way of typing. Because most people still use a hopelessly outdated keyboard layout (»qwerty« or slightly adapted versions of that), \LaTeX{} doesn’t make use of some cool features. I’m not talking about writing chinese or arabic text! Maybe this example will make the idea clear:
-% 
-% In standard \LaTeX, one has to write
-% \begin{verbatim}
-% This is the normal text, then comes the itemization:
-% \begin{itemize}
-%   \item text for first item
-%   \item \begin{itemize}
-%         \item this is an item inside an item…
-%         \item[$\Rightarrow$] Here an item with a formula: $\int_a^b x^2 dx$
-%         \end{itemize}
-%   \item and the outer itemize goes on…
-% \end{itemize}
-% \end{verbatim}
-% 
-% Using this package and having a superior keyboard layout\footnote{E.\,g. the ergonomic layout Neo: \url{http://neo-layout.org/}}, you can simply write:\footnote{The lmodern font I’m using here does not have the symbol for the inner item , so we change to DejaVu Sans Mono here.}
-% 
-% \begin{verbatim}
-% This is the normal text, then comes the itemization:
-% 
-% • text for first item
-% • 
-% 
-%   ‣ this is an item inside an item
-%   ‣[⇒] Here an item with a formula: $∫_a^b x² dx$
-%   
-% • and the outer itemize goes on…
-% 
-% And your normal text goes on…
-% \end{verbatim}
-% Well, actually I’m lying now because this is not fully implemented so far. But it’s the aim of this package to provide this – besides many, many other funny and cool things. The aim is to offer a more „wysiwyg“ way, without loosing anything of logical markup. One still can re|\def|ine the |•| if he doesn’t like the way his items look.
-% I have just started to write the package, there will be much more stuff here in the future.
-% 
-% Ok, enough blahblah, now comes the code. We begin with the uninteresting preamble stuff:
+% Ok, enough blahblah, now comes the code. We begin with preamble stuff:
 %    \begin{macrocode}
-\ProvidesPackage{alttex}
-
+\ProvidesPackage{alttex3}
+  [2010/01/09 v 0.c alternative way of TeXing]
+\RequirePackage{expl3}
+\ExplSyntaxOn
 \RequirePackage{amsmath}
+%    \end{macrocode}
+% Checking wether \XeTeX\ or Lua\TeX\ are used.
+%    \begin{macrocode}
+\xetex_if_engine:F{\luatex_if_engine:F{
+    \iow_term:n{^^J%
+      altTeX~needs~XeLaTeX~or~LuaLaTeX~format.
+    }
+    \tex_errmessage:D{XeLaTeX~or~LuaLaTeX~are~required!}
+    \tex_endinput:D
+}}
 %    \end{macrocode}
 % \begin{macro}{\usepackage}
 % Now, this is the first highlight. It is an extremely simple and stupid approach to load missing packages on-the-fly, just like Mik\TeX{} does. We re|\def|ine the |\usepackage| and hope, it works. Only working with texlive! If you’re using Mik\TeX{}, put a
 % \begin{verbatim}  \let\usepacke\oldpackage\end{verbatim} into your preamble, \emph{directly} after loading |alttex|. If this does not work, delete the following lines from your |alttex.sty|.
 %    \begin{macrocode}
-\let\oldpackage\usepackage
-\def\usepackage#1{
-  \IfFileExists{#1.sty}{
-    \oldpackage{#1}
-}{
-    \immediate\write18{tlmgr install #1}
-}
+\cs_set_eq:NwN\alt_oldpackage:n\usepackage
+\cs_set:Npn\usepackage#1{
+  \file_if_exist:nTF{#1.sty}{
+    \alt_oldpackage:n{#1}
+    }{
+    \immediate\write18{tlmgr~install~#1}
+  }
 }
 %    \end{macrocode}
 % \end{macro}
@@ -143,17 +194,7 @@ Do not distribute a modified version of this file under the same name.
 % Now load some nice packages and testing wether you’re running \XeLaTeX{} or not.
 %    \begin{macrocode}
 \RequirePackage{exscale}
-\RequirePackage{ifxetex}
 \RequirePackage{hhline}
-\ifxetex
-\else
-  \typeout{^^J%
-    This package needs XeLaTeX format.
-}
-  \errmessage{No XeLaTeX, no alttex. See the log for more information.}
-  \endinput
-\fi
-
 %    \end{macrocode}
 % We need |exscale| to write really big formulae, and |ifxetex| to check wether one uses the correct engine.
 % \section{Textmode}
@@ -161,17 +202,17 @@ Do not distribute a modified version of this file under the same name.
 % \begin{macro}{\noescape}
 % You want to write plain text. Maybe you’re annoyed by always escaping characters like \_ \^ \# \& \{ \} \$ \textasciitilde{} and so on. |\noescape| allows you to never escape anything—except the \textbackslash, which still might be used for |\textit{}| or so. Or maybe not… because the \{ \} are not escaped. Have to think about this one. Maybe the \textbackslash{} will be redefined to define \{ \} by itself.
 %    \begin{macrocode}
-\def\noescape{
-  \catcode`\_= 11%
-  \catcode`\^= 11%
-  \catcode`\#= 11%
-  \catcode`\&= 11%
-  %\catcode`\{= 11%
-  %\catcode`\}= 11%
-  \catcode`\$= 11%
-  \catcode`\~= 11%
-  \makeatletter%
-  \catcode`\%= 11
+\cs_new:Npn\noescape{
+  \char_set_catcode:w`\_= 11%
+  \char_set_catcode:w`\^= 11%
+  \char_set_catcode:w`\#= 11%
+  \char_set_catcode:w`\&= 11%
+  %\char_set_catcode:w`\{= 11%
+  %\char_set_catcode:w`\}= 11%
+  \char_set_catcode:w`\$= 11%
+  \char_set_catcode:w`\~= 11%
+  \char_set_catcode:w`\@= 11%
+  \char_set_catcode:w`\%= 11
 }
 %    \end{macrocode}
 % The |\makeatletter| is not necessary. But it fitted into this line, so I will leave it here.
@@ -179,16 +220,16 @@ Do not distribute a modified version of this file under the same name.
 % \begin{macro}{\oldescape}
 % Of course this has to be reset when doing anything like formula, tabular etc. Maybe I will be able to change the behaviour automatically. This idea has been inspired by a discussion on the Con\TeX{}t mailinglist.
 %    \begin{macrocode}
-\def\oldescape{
-  \catcode`\%= 14%
-  \catcode`\_= 8%
-  \catcode`\^= 7%
-  \catcode`\#= 6%
-  \catcode`\&= 4%
-  %\catcode`\{= 1%
-  %\catcode`\}= 2%
-  \catcode`\$= 3%
-  \catcode`\~= 13%
+\cs_new:Npn\oldescape{
+  \char_set_catcode:w`\%= 14%
+  \char_set_catcode:w`\_= 8%
+  \char_set_catcode:w`\^= 7%
+  \char_set_catcode:w`\#= 6%
+  \char_set_catcode:w`\&= 4%
+  %\char_set_catcode:w`\{= 1%
+  %\char_set_catcode:w`\}= 2%
+  \char_set_catcode:w`\$= 3%
+  \char_set_catcode:w`\~= 13%
   \makeatother%
 }
 %    \end{macrocode}
@@ -200,8 +241,8 @@ Do not distribute a modified version of this file under the same name.
 % \begin{macro}{\§ for \\\hhline}
 % Type |\–| (an en-dash) at the end of a line, and you get an |\hhline|. Type |\=| to get a double line
 %    \begin{macrocode}
-\def\–{\hhline}
-\def\={\hhline}
+\cs_set:Npn\–{\hhline}
+\cs_set:Npn\={\hhline}
 %    \end{macrocode}
 % This is shurely not a good symbol for this purpose, but I don’t have a better idea so far. At least it’s a ”bar“, so one can guess what it should do. 
 % \end{macro}
@@ -212,25 +253,25 @@ Do not distribute a modified version of this file under the same name.
 % 
 % This is the definition of the command:
 %    \begin{macrocode}
-\def\exceltabular#1{
-  \catcode`\^^I=4\relax
-  \eolintabular%
+\cs_new:Npn\exceltabular#1{
+  \char_set_catcode:w`\^^I=4\tex_relax:D
+  \alt_eolintabular:%
   \begin{tabular}{|c|c|c|}\hline%
-  \input{#1}%
+  \file_input:n{#1}%
   \end{tabular}%
-  \catcode`\^^M=5\relax
+  \char_set_catcode:w`\^^M=5\tex_relax:D
 }
 %    \end{macrocode}
 % And a little helper function to make the <enter> |\active|. Again, thanks to the people on the mailinglists.
 %    \begin{macrocode}
-\def\mybreak{\\\hline}
-\begingroup
-  \lccode`\~=`\^^M%
-\lowercase{%
-  \endgroup
-  \def\eolintabular{%
-    \catcode`\^^M=\active
-    \let~\mybreak
+\cs_new:Npn\alt_linebreak:{\\\hline}
+\tex_begingroup:D
+  \tex_lccode:D`\~=`\^^M%
+\tex_lowercase:D{%
+  \tex_endgroup:D
+  \cs_new:Npn\alt_eolintabular:{%
+    \char_set_catcode:w`\^^M=\active
+    \cs_set_eq:NwN~\alt_linebreak
 }%
 }
 %    \end{macrocode}
@@ -243,7 +284,6 @@ Do not distribute a modified version of this file under the same name.
 %    \end{macrocode}
 % 
 % \end{macro}
-
 % \section{Math stuff}
 % \subsection{braces}
 % \begin{macro}{\newbraces}
@@ -254,7 +294,6 @@ Do not distribute a modified version of this file under the same name.
 % 
 % The redefinition of |\mathstrut| is necessary when using amsmath (you will use amsmath when typesetting formulae, won’t you?), because the hight of formulae is determinated by the hight of a brace. But using ( ) as |\active| characters, we need another brace here. So we take |[|. This will probably also change. But the code is working fine for ( ).\todo{Maybe one could ”temporarily hardcode“ the hight of [ and then use this…}
 %    \begin{macrocode}
-\makeatletter
 \def\resetMathstrut@{%
     \setbox\z@\hbox{%
       \mathchardef\@tempa\mathcode`\[\relax
@@ -263,19 +302,18 @@ Do not distribute a modified version of this file under the same name.
 }%
   \ht\Mathstrutbox@\ht\z@ \dp\Mathstrutbox@\dp\z@
 }
-\makeatother
 
 {\catcode`(\active \xdef({\left\string(}}
 {\catcode`)\active \xdef){\right\string)}}
 
-\def\newbraces{
-  \mathcode`("8000
-  \mathcode`)"8000
+\cs_new:Npn\newbraces{
+  \char_set_mathcode:w`("8000
+  \char_set_mathcode:w`)"8000
 }
 
-\edef\oldbraces{
-  \mathcode`(\the\mathcode`(
-  \mathcode`)\the\mathcode`)
+\cs_new:Npx\oldbraces{
+  \char_set_mathcode:w`(\char_value_mathcode:w`(
+  \char_set_mathcode:w`)\char_value_mathcode:w`)
 }
 %    \end{macrocode}
 % \end{macro}
@@ -286,13 +324,11 @@ Do not distribute a modified version of this file under the same name.
 % \begin{center}|\begin{hugedisplaymath} E = mc^2 \end{hugedisplaymath}| \end{center}
 % There should be several steps of size, maybe.
 %    \begin{macrocode}
-\def\hugedisplaymath{
-  \makeatletter
-    \makeatother
+\cs_new:Npn\hugedisplaymath{
   \Huge
     \begin{equation*}
 }
-\def\endhugedisplaymath{
+\cs_new:Npn\endhugedisplaymath{
   \end{equation*}
 }
 %    \end{macrocode}
@@ -306,7 +342,7 @@ Do not distribute a modified version of this file under the same name.
 % {∫}
 % The code again is stolen and I don’t understand, why it does what it does, but it does it: The first argument is the character you want to use for “unicode math“, the second one is the \TeX-command.
 %    \begin{macrocode}
-\makeatletter
+\ExplSyntaxOff
 \def\altmath#1#2{%
   \expandafter\ifx\csname cc\string#1\endcsname\relax
     \add@special{#1}%
@@ -323,11 +359,11 @@ Do not distribute a modified version of this file under the same name.
   \else
   \fi
 }
-\makeatother
+\ExplSyntaxOn
 %    \end{macrocode}
 % We will make a switch to turn this stuff on or off, so it does not interfere with the unicode-math package. This list will increase by time. If you are missing a symbol, just send me the |\altmath{X}{\Xcode}|-line. I would be very thankful if anybody could send me a whole list of symbols!
 %    \begin{macrocode}
-\def\makealtmath{
+\cs_new:Npn\makealtmath{
   \altmath{α}\alpha
   \altmath{β}\beta
   \altmath{γ}\gamma
@@ -360,11 +396,12 @@ Do not distribute a modified version of this file under the same name.
 % 
 % First, store the actual meaning of |_| and |^| in |\oldunderscore| and |\oldhat|. \todo{The redefinition of hat does not work because TeX uses it for definition of catcodes. There has to be a really tricky way to get around that.}
 %    \begin{macrocode}
-\let\oldunderscore_\relax
-\let\oldhat^\relax
+\cs_set_eq:NwN\oldunderscore_\tex_relax:D
+\cs_set_eq:NwN\oldhat^\tex_relax:D
 %    \end{macrocode}
-% Now set |_| as |\active| char and define it the way we want it to behave. For this, we need the space char and end-of-line char to be an egroup char. So the underscript group is ended by space or eol and we don’t need to close it explicitly.
+% Now set |_| as |\active| char and define it the way we want it to behave. For this, we need the space char and end-of-line char to be an egroup char. So the underscript group is ended by space or eol and we don’t need to close it explicitly. (no expl3 code here, as we are dealing with the underscore. That would mess up everything …)
 %    \begin{macrocode}
+\ExplSyntaxOff
 \catcode`\_=13
 \def_{%
   \ifmmode
@@ -402,6 +439,7 @@ This does not work so far…
 \def\newUnder{
   \global\let_\advancedunderscore
 }
+\ExplSyntaxOn
 %    \end{macrocode}
 % \end{macro}
 % \subsection{matrices}
@@ -429,28 +467,27 @@ This does not work so far…
 % 
 % One has to pay greatest attention to the different characters looking like |⎢⎥|. They are in fact \emph{different} for the three matrices! (But not in every case; I just hope the following code really works.)
 %    \begin{macrocode}
-\makeatletter
-\catcode`\⎛13
-\catcode`\⎞13
-\catcode`\⎟13
-\catcode`\⎝13
-\catcode`\⎠13
-\def⎛{\begin{pmatrix}}
-\def⎞{\\}
-\def⎝{}
-\def⎠{\end{pmatrix}}
-\def⎟{\\}
+\char_set_catcode:w`\⎛13
+\char_set_catcode:w`\⎞13
+\char_set_catcode:w`\⎟13
+\char_set_catcode:w`\⎝13
+\char_set_catcode:w`\⎠13
+\cs_new:Npn⎛{\begin{pmatrix}}
+\cs_new:Npn⎞{\\}
+\cs_new:Npn⎝{}
+\cs_new:Npn⎠{\end{pmatrix}}
+\cs_new:Npn⎟{\\}
 
 \catcode`\⎡13
 \catcode`\⎤13
 \catcode`\⎥13
 \catcode`\⎣13
 \catcode`\⎦13
-\def⎥{\\}
-\def⎡{\begin{bmatrix}}
-\def⎤{\\}
-\def⎣{}
-\def⎦{\end{bmatrix}}
+\cs_new:Npn⎥{\\}
+\cs_new:Npn⎡{\begin{bmatrix}}
+\cs_new:Npn⎤{\\}
+\cs_new:Npn⎣{}
+\cs_new:Npn⎦{\end{bmatrix}}
 
 \catcode`\⎧13
 \catcode`\⎫13
@@ -458,14 +495,14 @@ This does not work so far…
 \catcode`\⎩13
 \catcode`\⎭13
 \catcode`\⎬13
-\def⎧{\left\{\begin{matrix}}
-\def⎫{\\\@gobble}
-\def⎩{}
-\def⎭{\end{matrix}\right\}}
-\def⎪{\\\@gobble}
-\def⎬{\\\@gobble}
+\cs_new:Npn⎧{\left\{\begin{matrix}}
+\cs_new:Npn⎫{\\\use_none:n}
+\cs_new:Npn⎩{}
+\cs_new:Npn⎭{\end{matrix}\right\}}
+\cs_new:Npn⎪{\\\use_none:n}
+\cs_new:Npn⎬{\\\use_none:n}
 %    \end{macrocode}
-% We need to |\@gobble| the next character only in this case, as the left-hand bar characters seem to be the same as the right-hand and so cause additional line breaks. This way it is robust against every strange codepoint the left-hand may have.\todo{The codepoints have to be checked very carefully! This is not what a robust solution does look like!}
+% We need to |\use_none:n| (ignore) the next character only in this case, as the left-hand bar characters seem to be the same as the right-hand and so cause additional line breaks. This way it is robust against every strange codepoint the left-hand may have.\todo{The codepoints have to be checked very carefully! This is not what a robust solution does look like!}
 % \section{Lists and such things}
 % \subsection{itemize with a single character}
 % \label{sec:itemize}
@@ -478,14 +515,14 @@ This does not work so far…
 % \begin{macro}{\newitemii}
 % The following ugly peace of code is writen by me, defining the conditional insertion of the |\begin{itemize}|. This will be assigned to an active character using |\makeitemi| and |\makeitemii|, respectively.
 %    \begin{macrocode}
-\def\outside{o}
-\def\inside{i}
-\let\insideitemizei\outside
-\let\insideitemizeii\outside
+\cs_new:Npn\outside{o}
+\cs_new:Npn\inside{i}
+\cs_set_eq:NwN\insideitemizei\outside
+\cs_set_eq:NwN\insideitemizeii\outside
 %    \end{macrocode}
 % The end of itemizei and itemizeii:
 %    \begin{macrocode}
-\def\altenditemize{
+\cs_new:Npn\altenditemize{
   \if\altlastitem 1%
     \let\altlastitem0%
   \else%
@@ -493,7 +530,11 @@ This does not work so far…
     \let\insideitemizei\outside%
   \fi%
 }
-
+%    \end{macrocode}
+% Dealing with the |~| char, therefore no expl3 syntax here:
+%    \begin{macrocode}
+%
+\ExplSyntaxOff 
 \begingroup
   \lccode`\~=`\^^M%
 \lowercase{%
@@ -503,28 +544,29 @@ This does not work so far…
     \let~\altenditemize
 }%
 }
+\ExplSyntaxOn
 
-\def\newitemi{%
-  \ifx\insideitemizei\inside%
-    \let\altlastitem1%
-    \expandafter\item%
-  \else%
+\cs_new:Npn\newitemi{%
+  \if_meaning:w\insideitemizei\inside%
+    \cs_set_eq:NN\altlastitem1%
+    \exp_after:wN\item%
+  \else:%
     \begin{itemize}%
-    \let\insideitemizei\inside%
-    \let\altlastitem1%
+    \cs_set_eq:NN\insideitemizei\inside%
+    \cs_set_eq:NN\altlastitem1%
     \makeenteractive%
-    \expandafter\item%
-  \fi
+    \exp_after:wN\item%
+  \fi:
 }
 
-\def\newitemii{
-  \ifx\insideitemizeii\inside
-    \expandafter\item%
-  \else
+\cs_new:Npn\newitemii{
+  \if_meaning:w\insideitemizeii\inside
+    \exp_after:wN\item%
+  \else:
     \begin{itemize}
-      \let\insideitemizeii\inside
-      \expandafter\item%
-  \fi
+      \cs_set_eq:NN\insideitemizeii\inside
+      \exp_after:wN\item%
+  \fi:
 }
 %    \end{macrocode}
 % \end{macro}
@@ -533,8 +575,10 @@ This does not work so far…
 % \begin{macro}{\makeitemi}
 % \begin{macro}{\makeitemii}
 % With this macro, you can define the character you want to use for first-level itemize. (Guess the sense of |\makeitemii|…) Default ist |•| for first-level and |‣| for second-level. Maybe this will be extended till fourth level. More doesn‘t seem to make any sense.
+%
+% Again, no expl3 due to usage of |~| here. :(
 %    \begin{macrocode}
-% 
+\ExplSyntaxOff
 \makeatletter
 \def\makeitemi#1{%
   \expandafter\ifx\csname cc\string#1\endcsname\relax
@@ -569,26 +613,26 @@ This does not work so far…
   \else
   \fi
 }
+\ExplSyntaxOn
 %    \end{macrocode}
 % \end{macro}\end{macro}
 % Now there are the two helperfunctions – no guess what they are really doing.
 %    \begin{macrocode}
-\def\add@special#1{%
+\cs_new:Npn\add@special#1{%
   \rem@special{#1}%
-  \expandafter\gdef\expandafter\dospecials\expandafter
+  \exp_after:wN\cs_gset_nopar:Npn\exp_after:wN\dospecials\exp_after:wN
 {\dospecials \do #1}%
-  \expandafter\gdef\expandafter\@sanitize\expandafter
+  \exp_after:wN\cs_gset_nopar:Npn\exp_after:wN\@sanitize\exp_after:wN
 {\@sanitize \@makeother #1}}
-\def\rem@special#1{%
-  \def\do##1{%
-    \ifnum`#1=`##1 \else \noexpand\do\noexpand##1\fi}%
-  \xdef\dospecials{\dospecials}%
-  \begingroup
-    \def\@makeother##1{%
-      \ifnum`#1=`##1 \else \noexpand\@makeother\noexpand##1\fi}%
-    \xdef\@sanitize{\@sanitize}%
-  \endgroup}
-\makeatother
+\cs_new:Npn\rem@special#1{%
+  \cs_set:Npn\do##1{%
+    \if_num:w`#1=`##1 \else: \exp_not:N\do\exp_not:N##1\fi:}%
+  \cs_set_nopar:Npx\dospecials{\dospecials}%
+  \tex_begingroup:D
+    \cs_set:Npn\@makeother##1{%
+      \if_num:w`#1=`##1 \else: \exp_not:N\@makeother\exp_not:N##1\fi:}%
+    \cs_set_nopar:Npx\@sanitize{\@sanitize}%
+  \tex_endgroup:D}
 %    \end{macrocode}
 % \end{macro}
 % \subsection{enumerate with a single character}
@@ -597,35 +641,35 @@ This does not work so far…
 %
 % For the implementation: copy-pasted the code above, nothing interesting so far.
 %    \begin{macrocode}
-\def\¹{\end{enumerate}}
-\def\²{\end{enumerate}}
+\cs_new:Npn\¹{\end{enumerate}}
+\cs_new:Npn\²{\end{enumerate}}
 
-\let\insideenumi\outside
-\let\insideenumii\outside
+\cs_set_eq:NN\insideenumi\outside
+\cs_set_eq:NN\insideenumii\outside
 
-\def\newenumi{
-  \ifx\insideenumi\inside
-    \expandafter\item%
-  \else
+\cs_new:Npn\newenumi{
+  \if_meaning:w\insideenumi\inside
+    \exp_after:wN\item%
+  \else:
     \begin{enumerate}
-      \let\insideenumi\inside
-      \expandafter\item%
-  \fi
+      \cs_set_eq:NN\insideenumi\inside
+      \exp_after:wN\item%
+  \fi:
 }
 
-\def\newenumii{
-  \ifx\insideenumii\inside
-    \expandafter\item%
-  \else
+\cs_new:Npn\newenumii{
+  \if_meaning:w\insideenumii\inside
+    \exp_after:wN\item%
+  \else:
     \begin{enumerate}
-      \let\insideenumii\inside
-      \expandafter\item%
-  \fi
+      \cs_set_eq:NN\insideenumii\inside
+      \exp_after:wN\item%
+  \fi:
 }
-
 %    \end{macrocode}
-% We use the same methods as above, still not understanding, what they are doing. Just changing two lines of code and hoping, everything will be fine.
+% We use the same methods as above, still not understanding, what they are doing. Just changing two lines of code and hoping, everything will be fine. Again, no expl3.
 %    \begin{macrocode}
+\ExplSyntaxOff
 \makeatletter
 \def\makeenumi#1{%
   \expandafter\ifx\csname cc\string#1\endcsname\relax
@@ -661,7 +705,7 @@ This does not work so far…
   \fi
 }
 \makeatother
-
+\ExplSyntaxOn
 %    \end{macrocode}
 % \end{macro}
 % Finally, we set the default characters for the items and enumerations:
@@ -699,5 +743,184 @@ This does not work so far…
 % \item If there is only one char after an |_|, there should no space be needed.
 % \item Maybe there could be a ConTeXt-version of this file.
 % \end{itemize}
+% \iffalse
+%</alttex>
+% \fi
+% \iffalse
+%<*sample>
+\documentclass{article}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\usepackage{
+alttex,
+blindtext,
+dtklogos,
+fancyhdr,
+multicol,
+lmodern,
+shortvrb,
+xltxtra
+}
+
+\MakeShortVerb|
+
+\newenvironment{sample}[1]{
+  \subsection*{#1}
+  \hrule
+  \label{#1}
+  \begin{minipage}{\textwidth}
+  \begin{multicols}{3}}
+{\end{multicols}
+  \end{minipage}\vspace{2cm}}
+
+\fancyhead{\normalfont\qquad alttex\hfill normal \hfill result\qquad}
+\pagestyle{fancy}
+
+\setmonofont[Scale=0.8]{DejaVu Sans} % the standard fonts don’t have the nice symbols!
+
+\title{A short sample document for the |alttex| package}
+\author{Arno L. Trautmann\thanks{arno.trautmann@gmx.de}}
+\date{\today}
+
+\begin{document}
+\maketitle
+This document shows applications of the possibilities the |alttex| packages offers for writing code in \XeLaTeX.
+
+There are three columns: The left one shows the input code using |alttex|, the middle one shows the corresponding ”normal“ input, and on the right-hand side there is the output of that code. The output is written in the code on the left-hand side, so I am not cheating here…\vspace{2cm}
+
+\sample{noescape}
+\noescape
+\begin{verbatim}
+This is a short text including
+some characters like an @,
+a §, 100% unescaped, even {}
+and ~ or a &
+without a backslash.
+\end{verbaatim}
+\vfill
+\oldescape
+\begin{verbatim}
+This is a short text including
+some characters like an @,
+a §, 100\% unescaped, even \{\}
+and \textasciitilde\ or a
+\& without a backslash.
+\end{verbatim}
+\vfill
+\noescape
+This is a short text including
+some characters like an @,
+a §, 100% unescaped, even {}
+and ~ or a &
+without a backslash.
+\oldescape
+\endsample
+\makealtmath
+
+\sample{general math}
+|\[∫_-∞ ^∞ ∀\]|
+
+\ \vfill
+|\[\int_{-\infty}^{\infty}\]|
+\ \vfill
+\[∫_-∞ \ \]% ^∞ ∀\]
+\endsample
+
+\sample{itemize}
+\begin{verbatim}
+A short sample text
+
+• first item
+• second item
+
+  ‣ deeper item
+  ‣ second deeper item
+  \end{itemize}
+\end{itemize}
+\end{verbatim}
+\ \vfill
+\begin{verbatim}
+A short sample text
+\begin{itemize}
+\item first item
+\item second item
+\begin{itemize}
+  \item deeper item
+  \item second deeper item
+  \end{itemize}
+\end{itemize}
+\end{verbatim}
+\ \vfill
+A short sample text
+\def\‣{\end{itemize}}
+
+• first item
+• second item
+
+  ‣ deeper item
+  ‣ second deeper item
+  \‣
+
+\endsample
+
+\sample{enumerate}
+\begin{verbatim}
+A short sample text
+
+¹ first item
+¹ second item
+
+  ² deeper item
+  ² second deeper item
+  \end{enumerate}
+\end{enumerate}
+\end{verbatim}
+\vfill
+\begin{verbatim}
+A short sample text
+\begin{enumerate}
+\item first item
+\item second item
+\begin{enumerate}
+  \item deeper item
+  \item second deeper item
+  \end{enumerate}
+\end{enumerate}
+\end{verbatim}
+\vfill
+A short sample text
+
+¹ first item
+¹ second item
+
+  ² deeper item
+  ² second deeper item
+  \end{enumerate}
+\end{enumerate}
+\endsample
+
+\sample{huge display math}
+\begin{verbatim}
+\begin{hugedisplaymath}
+E = mc^2
+\end{hugedisplaymath}
+\[E = mc^2\]
+\end{verbatim}
+\vfill
+\begin{verbatim}
+\Huge
+\[ E = mc^2\]
+\normalsize
+\[E = mc^2\]
+\end{verbatim}
+\vfill
+\begin{hugedisplaymath}
+E = mc^2
+\end{hugedisplaymath}
+\[E = mc^2\]
+\endsample
+\end{document}
+%</sample>
+% \fi
 % \Finale
 \endinput
