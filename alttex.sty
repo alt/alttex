@@ -4,8 +4,7 @@
 %%
 %% The original source files were:
 %%
-%% alttex.dtx  (with options: `package')
-%% 
+%% alttex.dtx  (with options: `alttex')
 %% EXPERIMENTAL CODE
 %% 
 %% Do not distribute this file without also distributing the
@@ -15,74 +14,65 @@
 %% 
 %% File: alttex.dtx by Arno Trautmann, mail: arno dot trautmann at gmx dot de
 \ProvidesPackage{alttex}
-
+  [2010/01/09 v 0.c alternative way of TeXing]
+\RequirePackage{expl3}
+\ExplSyntaxOn
 \RequirePackage{amsmath}
-\let\oldpackage\usepackage
-\def\usepackage#1{
-  \IfFileExists{#1.sty}{
-    \oldpackage{#1}
-}{
-    \immediate\write18{tlmgr install #1}
-}
+\cs_set_eq:NwN\alt_oldpackage:n\usepackage
+\cs_set_eq:NwN\altusepackage:n\usepackage % to restore at document level
+\cs_set:Npn\usepackage#1{
+  \file_if_exist:nTF{#1.sty}{
+    \alt_oldpackage:n{#1}
+    }{
+    \immediate\write18{tlmgr~install~#1}
+  }
 }
 \RequirePackage{exscale}
-\RequirePackage{ifxetex}
 \RequirePackage{hhline}
-\ifxetex
-\else
-  \typeout{^^J%
-    This package needs XeLaTeX format.
+\cs_new:Npn\noescape{
+  \char_set_catcode:w`\_= 11%
+  \char_set_catcode:w`\^= 11%
+  \char_set_catcode:w`\#= 11%
+  \char_set_catcode:w`\&= 11%
+  %\char_set_catcode:w`\{= 11%
+  %\char_set_catcode:w`\}= 11%
+  \char_set_catcode:w`\$= 11%
+  \char_set_catcode:w`\~= 11%
+  \char_set_catcode:w`\@= 11%
+  \char_set_catcode:w`\%= 11
 }
-  \errmessage{No XeLaTeX, no alttex. See the log for more information.}
-  \endinput
-\fi
-
-\def\noescape{
-  \catcode`\_= 11%
-  \catcode`\^= 11%
-  \catcode`\#= 11%
-  \catcode`\&= 11%
-  %\catcode`\{= 11%
-  %\catcode`\}= 11%
-  \catcode`\$= 11%
-  \catcode`\~= 11%
-  \makeatletter%
-  \catcode`\%= 11
-}
-\def\oldescape{
-  \catcode`\%= 14%
-  \catcode`\_= 8%
-  \catcode`\^= 7%
-  \catcode`\#= 6%
-  \catcode`\&= 4%
-  %\catcode`\{= 1%
-  %\catcode`\}= 2%
-  \catcode`\$= 3%
-  \catcode`\~= 13%
+\cs_new:Npn\oldescape{
+  \char_set_catcode:w`\%= 14%
+  \char_set_catcode:w`\_= 8%
+  \char_set_catcode:w`\^= 7%
+  \char_set_catcode:w`\#= 6%
+  \char_set_catcode:w`\&= 4%
+  %\char_set_catcode:w`\{= 1%
+  %\char_set_catcode:w`\}= 2%
+  \char_set_catcode:w`\$= 3%
+  \char_set_catcode:w`\~= 13%
   \makeatother%
 }
-\def\–{\hhline}
-\def\={\hhline}
-\def\exceltabular#1{
-  \catcode`\^^I=4\relax
-  \eolintabular%
+\cs_set:Npn\–{\hhline}
+\cs_set:Npn\={\hhline}
+\cs_new:Npn\exceltabular#1{
+  \char_set_catcode:w`\^^I=4\tex_relax:D
+  \alt_eolintabular:%
   \begin{tabular}{|c|c|c|}\hline%
-  \input{#1}%
+  \file_input:n{#1}%
   \end{tabular}%
-  \catcode`\^^M=5\relax
+  \char_set_catcode:w`\^^M=5\tex_relax:D
 }
-\def\mybreak{\\\hline}
-\begingroup
-  \lccode`\~=`\^^M%
-\lowercase{%
-  \endgroup
-  \def\eolintabular{%
-    \catcode`\^^M=\active
-    \let~\mybreak
+\cs_new:Npn\alt_linebreak:{\\\hline}
+\tex_begingroup:D
+  \tex_lccode:D`\~=`\^^M%
+\tex_lowercase:D{%
+  \tex_endgroup:D
+  \cs_new:Npn\alt_eolintabular:{%
+    \char_set_catcode:w`\^^M=\active
+    \cs_set_eq:NwN~\alt_linebreak
 }%
 }
-
-\makeatletter
 \def\resetMathstrut@{%
     \setbox\z@\hbox{%
       \mathchardef\@tempa\mathcode`\[\relax
@@ -91,30 +81,27 @@
 }%
   \ht\Mathstrutbox@\ht\z@ \dp\Mathstrutbox@\dp\z@
 }
-\makeatother
 
 {\catcode`(\active \xdef({\left\string(}}
 {\catcode`)\active \xdef){\right\string)}}
 
-\def\newbraces{
-  \mathcode`("8000
-  \mathcode`)"8000
+\cs_new:Npn\newbraces{
+  \char_set_mathcode:w`("8000
+  \char_set_mathcode:w`)"8000
 }
 
-\edef\oldbraces{
-  \mathcode`(\the\mathcode`(
-  \mathcode`)\the\mathcode`)
+\cs_new:Npx\oldbraces{
+  \char_set_mathcode:w`(\char_value_mathcode:w`(
+  \char_set_mathcode:w`)\char_value_mathcode:w`)
 }
-\def\hugedisplaymath{
-  \makeatletter
-    \makeatother
+\cs_new:Npn\hugedisplaymath{
   \Huge
     \begin{equation*}
 }
-\def\endhugedisplaymath{
+\cs_new:Npn\endhugedisplaymath{
   \end{equation*}
 }
-\makeatletter
+\ExplSyntaxOff
 \def\altmath#1#2{%
   \expandafter\ifx\csname cc\string#1\endcsname\relax
     \add@special{#1}%
@@ -131,8 +118,8 @@
   \else
   \fi
 }
-\makeatother
-\def\makealtmath{
+\ExplSyntaxOn
+\cs_new:Npn\makealtmath{
   \altmath{α}\alpha
   \altmath{β}\beta
   \altmath{γ}\gamma
@@ -156,8 +143,9 @@
   \altmath{₉}{_9}
   \altmath{₀}{_0}
 }
-\let\oldunderscore_\relax
-\let\oldhat^\relax
+\cs_set_eq:NwN\oldunderscore_\tex_relax:D
+\cs_set_eq:NwN\oldhat^\tex_relax:D
+\ExplSyntaxOff
 \catcode`\_=13
 \def_{%
   \ifmmode
@@ -189,28 +177,28 @@ This does not work so far…
 \def\newUnder{
   \global\let_\advancedunderscore
 }
-\makeatletter
-\catcode`\⎛13
-\catcode`\⎞13
-\catcode`\⎟13
-\catcode`\⎝13
-\catcode`\⎠13
-\def⎛{\begin{pmatrix}}
-\def⎞{\\}
-\def⎝{}
-\def⎠{\end{pmatrix}}
-\def⎟{\\}
+\ExplSyntaxOn
+\char_set_catcode:w`\⎛13
+\char_set_catcode:w`\⎞13
+\char_set_catcode:w`\⎟13
+\char_set_catcode:w`\⎝13
+\char_set_catcode:w`\⎠13
+\cs_new:Npn⎛{\begin{pmatrix}}
+\cs_new:Npn⎞{\\}
+\cs_new:Npn⎝{}
+\cs_new:Npn⎠{\end{pmatrix}}
+\cs_new:Npn⎟{\\}
 
 \catcode`\⎡13
 \catcode`\⎤13
 \catcode`\⎥13
 \catcode`\⎣13
 \catcode`\⎦13
-\def⎥{\\}
-\def⎡{\begin{bmatrix}}
-\def⎤{\\}
-\def⎣{}
-\def⎦{\end{bmatrix}}
+\cs_new:Npn⎥{\\}
+\cs_new:Npn⎡{\begin{bmatrix}}
+\cs_new:Npn⎤{\\}
+\cs_new:Npn⎣{}
+\cs_new:Npn⎦{\end{bmatrix}}
 
 \catcode`\⎧13
 \catcode`\⎫13
@@ -218,17 +206,17 @@ This does not work so far…
 \catcode`\⎩13
 \catcode`\⎭13
 \catcode`\⎬13
-\def⎧{\left\{\begin{matrix}}
-\def⎫{\\\@gobble}
-\def⎩{}
-\def⎭{\end{matrix}\right\}}
-\def⎪{\\\@gobble}
-\def⎬{\\\@gobble}
-\def\outside{o}
-\def\inside{i}
-\let\insideitemizei\outside
-\let\insideitemizeii\outside
-\def\altenditemize{
+\cs_new:Npn⎧{\left\{\begin{matrix}}
+\cs_new:Npn⎫{\\\use_none:n}
+\cs_new:Npn⎩{}
+\cs_new:Npn⎭{\end{matrix}\right\}}
+\cs_new:Npn⎪{\\\use_none:n}
+\cs_new:Npn⎬{\\\use_none:n}
+\cs_new:Npn\outside{o}
+\cs_new:Npn\inside{i}
+\cs_set_eq:NwN\insideitemizei\outside
+\cs_set_eq:NwN\insideitemizeii\outside
+\cs_new:Npn\altenditemize{
   \if\altlastitem 1%
     \let\altlastitem0%
   \else%
@@ -236,7 +224,7 @@ This does not work so far…
     \let\insideitemizei\outside%
   \fi%
 }
-
+\ExplSyntaxOff
 \begingroup
   \lccode`\~=`\^^M%
 \lowercase{%
@@ -246,29 +234,31 @@ This does not work so far…
     \let~\altenditemize
 }%
 }
+\ExplSyntaxOn
 
-\def\newitemi{%
-  \ifx\insideitemizei\inside%
-    \let\altlastitem1%
-    \expandafter\item%
-  \else%
+\cs_new:Npn\newitemi{%
+  \if_meaning:w\insideitemizei\inside%
+    \cs_set_eq:NN\altlastitem1%
+    \exp_after:wN\item%
+  \else:%
     \begin{itemize}%
-    \let\insideitemizei\inside%
-    \let\altlastitem1%
+    \cs_set_eq:NN\insideitemizei\inside%
+    \cs_set_eq:NN\altlastitem1%
     \makeenteractive%
-    \expandafter\item%
-  \fi
+    \exp_after:wN\item%
+  \fi:
 }
 
-\def\newitemii{
-  \ifx\insideitemizeii\inside
-    \expandafter\item%
-  \else
+\cs_new:Npn\newitemii{
+  \if_meaning:w\insideitemizeii\inside
+    \exp_after:wN\item%
+  \else:
     \begin{itemize}
-      \let\insideitemizeii\inside
-      \expandafter\item%
-  \fi
+      \cs_set_eq:NN\insideitemizeii\inside
+      \exp_after:wN\item%
+  \fi:
 }
+\ExplSyntaxOff
 \makeatletter
 \def\makeitemi#1{%
   \expandafter\ifx\csname cc\string#1\endcsname\relax
@@ -303,48 +293,48 @@ This does not work so far…
   \else
   \fi
 }
-\def\add@special#1{%
+\ExplSyntaxOn
+\cs_new:Npn\add@special#1{%
   \rem@special{#1}%
-  \expandafter\gdef\expandafter\dospecials\expandafter
+  \exp_after:wN\cs_gset_nopar:Npn\exp_after:wN\dospecials\exp_after:wN
 {\dospecials \do #1}%
-  \expandafter\gdef\expandafter\@sanitize\expandafter
+  \exp_after:wN\cs_gset_nopar:Npn\exp_after:wN\@sanitize\exp_after:wN
 {\@sanitize \@makeother #1}}
-\def\rem@special#1{%
-  \def\do##1{%
-    \ifnum`#1=`##1 \else \noexpand\do\noexpand##1\fi}%
-  \xdef\dospecials{\dospecials}%
-  \begingroup
-    \def\@makeother##1{%
-      \ifnum`#1=`##1 \else \noexpand\@makeother\noexpand##1\fi}%
-    \xdef\@sanitize{\@sanitize}%
-  \endgroup}
-\makeatother
-\def\¹{\end{enumerate}}
-\def\²{\end{enumerate}}
+\cs_new:Npn\rem@special#1{%
+  \cs_set:Npn\do##1{%
+    \if_num:w`#1=`##1 \else: \exp_not:N\do\exp_not:N##1\fi:}%
+  \cs_set_nopar:Npx\dospecials{\dospecials}%
+  \tex_begingroup:D
+    \cs_set:Npn\@makeother##1{%
+      \if_num:w`#1=`##1 \else: \exp_not:N\@makeother\exp_not:N##1\fi:}%
+    \cs_set_nopar:Npx\@sanitize{\@sanitize}%
+  \tex_endgroup:D}
+\cs_new:Npn\¹{\end{enumerate}}
+\cs_new:Npn\²{\end{enumerate}}
 
-\let\insideenumi\outside
-\let\insideenumii\outside
+\cs_set_eq:NN\insideenumi\outside
+\cs_set_eq:NN\insideenumii\outside
 
-\def\newenumi{
-  \ifx\insideenumi\inside
-    \expandafter\item%
-  \else
+\cs_new:Npn\newenumi{
+  \if_meaning:w\insideenumi\inside
+    \exp_after:wN\item%
+  \else:
     \begin{enumerate}
-      \let\insideenumi\inside
-      \expandafter\item%
-  \fi
+      \cs_set_eq:NN\insideenumi\inside
+      \exp_after:wN\item%
+  \fi:
 }
 
-\def\newenumii{
-  \ifx\insideenumii\inside
-    \expandafter\item%
-  \else
+\cs_new:Npn\newenumii{
+  \if_meaning:w\insideenumii\inside
+    \exp_after:wN\item%
+  \else:
     \begin{enumerate}
-      \let\insideenumii\inside
-      \expandafter\item%
-  \fi
+      \cs_set_eq:NN\insideenumii\inside
+      \exp_after:wN\item%
+  \fi:
 }
-
+\ExplSyntaxOff
 \makeatletter
 \def\makeenumi#1{%
   \expandafter\ifx\csname cc\string#1\endcsname\relax
@@ -380,12 +370,25 @@ This does not work so far…
   \fi
 }
 \makeatother
-
+\ExplSyntaxOn
 \makeitemi•
 \makeitemii‣
 \makeenumi¹
 \makeenumii²
   % Everything you have to know about \XeLaTeX\ to use this package: Write your \LaTeX\ file just as you are used to. But save it as utf8-encoded, and say
+%% Copyright 2008–2010 Arno Trautmann <arno.trautmann@gmx.de>
+%% 
+%% Distributed under the LaTeX Project Public License,
+%% verson 1.3c or higher (your choice). The latest version of
+%% this license is at: http://www.latex-project.org/lppl.txt
+%% 
+%% This work is "author-maintained" by Arno Trautmann
+%% 
+%% This work conists of this file alttex.dtx
+%%          and the derived files alttex.sty
+%%                                alttex.pdf
+%%                                sample.tex
+%%                            and sample.pdf.
 %% 
 %%
 %% End of file `alttex.sty'.

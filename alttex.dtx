@@ -23,7 +23,7 @@ Do not distribute a modified version of this file under the same name.
 
 \endpreamble
 \postamble
-Copyright 2008–2009 Arno Trautmann <arno.trautmann@gmx.de>
+Copyright 2008–2010 Arno Trautmann <arno.trautmann@gmx.de>
 
 Distributed under the LaTeX Project Public License,
 verson 1.3c or higher (your choice). The latest version of
@@ -31,24 +31,24 @@ this license is at: http://www.latex-project.org/lppl.txt
 
 This work is "author-maintained" by Arno Trautmann
 
-This work conists of this file alttex3.dtx
-         and the derived files alttex3.sty
-                               alttex3.pdf
+This work conists of this file alttex.dtx
+         and the derived files alttex.sty
+                               alttex.pdf
                                sample.tex
                            and sample.pdf.
 
 \endpostamble
 \askforoverwritefalse
 
-\generate{\file{alttex3.sty}{\from{alttex3.dtx}{alttex}}}
+\generate{\file{alttex.sty}{\from{alttex.dtx}{alttex}}}
 %</batchfile>
 %<batchfile>\endbatchfile
 %<*internal>
-\generate{\file{alttex3.ins}{\from{alttex3.dtx}{batchfile}}}
+\generate{\file{alttex.ins}{\from{alttex.dtx}{batchfile}}}
 \nopostamble
-\generate{\file{sample.tex}{\from{alttex3.dtx}{sample}}}
+\generate{\file{sample.tex}{\from{alttex.dtx}{sample}}}
 \nopreamble
-\generate{\file{README}{\from{alttex3.dtx}{readme}}}
+\generate{\file{README}{\from{alttex.dtx}{readme}}}
 \endgroup
 %</internal>
 %
@@ -150,16 +150,16 @@ Well, actually I’m lying now because this is not fully implemented so far. But
 \StopEventually{}
 \clearpage
 
-\part{Implementation: alttex3.sty}
+\part{Implementation: alttex.sty}
 
-\DocInput{alttex3.dtx}
+\DocInput{alttex.dtx}
 \end{document}
 %</driver>
 %<*alttex>
 % \fi
 % Ok, enough blahblah, now comes the code. We begin with preamble stuff:
 %    \begin{macrocode}
-\ProvidesPackage{alttex3}
+\ProvidesPackage{alttex}
   [2010/01/09 v 0.c alternative way of TeXing]
 \RequirePackage{expl3}
 \ExplSyntaxOn
@@ -167,19 +167,13 @@ Well, actually I’m lying now because this is not fully implemented so far. But
 %    \end{macrocode}
 % Checking wether \XeTeX\ or Lua\TeX\ are used.
 %    \begin{macrocode}
-\xetex_if_engine:F{\luatex_if_engine:F{
-    \iow_term:n{^^J%
-      altTeX~needs~XeLaTeX~or~LuaLaTeX~format.
-    }
-    \tex_errmessage:D{XeLaTeX~or~LuaLaTeX~are~required!}
-    \tex_endinput:D
-}}
 %    \end{macrocode}
 % \begin{macro}{\usepackage}
 % Now, this is the first highlight. It is an extremely simple and stupid approach to load missing packages on-the-fly, just like Mik\TeX{} does. We re|\def|ine the |\usepackage| and hope, it works. Only working with texlive! If you’re using Mik\TeX{}, put a
-% \begin{verbatim}  \let\usepacke\oldpackage\end{verbatim} into your preamble, \emph{directly} after loading |alttex|. If this does not work, delete the following lines from your |alttex.sty|.
+% \begin{verbatim}  \let\usepackage\altpackage\end{verbatim} into your preamble, \emph{directly} after loading |alttex|. If this does not work, delete the following lines from your |alttex.sty|.
 %    \begin{macrocode}
 \cs_set_eq:NwN\alt_oldpackage:n\usepackage
+\cs_set_eq:NwN\altusepackage:n\usepackage % to restore at document level
 \cs_set:Npn\usepackage#1{
   \file_if_exist:nTF{#1.sty}{
     \alt_oldpackage:n{#1}
@@ -720,6 +714,7 @@ This does not work so far…
 % This should be a list of serious bugs. Please report any of them to me!
 % \begin{itemize}
 % \item Itemize does not work correctly in beamer. Use |\•| at the end of your itemize. (see section \ref{sec:itemize})
+% \item |\exceltabular| is broken.
 % \end{itemize}
 % \newpage\appendix
 % \section*{A very short introduction to \XeLaTeX}

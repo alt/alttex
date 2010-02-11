@@ -1,5 +1,18 @@
-% Compile this file with xelatex. You have to have the font DejaVu Sans installed on your system!
-
+%%
+%% This is file `sample.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% alttex.dtx  (with options: `sample')
+%% EXPERIMENTAL CODE
+%% 
+%% Do not distribute this file without also distributing the
+%% source files specified above.
+%% 
+%% Do not distribute a modified version of this file under the same name.
+%% 
+%% File: alttex.dtx by Arno Trautmann, mail: arno dot trautmann at gmx dot de
 \documentclass{article}
 \usepackage[english]{babel}
 \usepackage{geometry}
@@ -104,6 +117,7 @@ A short sample text
 \end{verbatim}
 \ \vfill
 A short sample text
+\def\‣{\end{itemize}}
 
 • first item
 • second item
@@ -111,7 +125,7 @@ A short sample text
   ‣ deeper item
   ‣ second deeper item
   \‣
-\•
+
 \endsample
 
 \sample{enumerate}
@@ -169,9 +183,5 @@ E = mc^2
 E = mc^2
 \end{hugedisplaymath}
 \[E = mc^2\]
-
-
-
-
 \endsample
 \end{document}
