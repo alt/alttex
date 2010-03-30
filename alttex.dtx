@@ -4,7 +4,11 @@
 \iffalse
 %</internal>
 %<*readme>
-This is the readme file.
+This is an experimental LaTeX package, using the XeTeX engine, some XeLaTeX packages and unicode features to offer a new way of working with LaTeX. Well, that’s exaggerated, but still it might be a nice toy.
+Read the docmentation by clicking on ”raw“ at the pdf.
+To compile and use the package, just download the .dtx and compile it with XeLaTeX. Then put the resulting .sty file to a place where TeX finds it. Documentation will be generated, too, but might lack some fonts. Therefore it is offered on github as well.
+ 
+Any comments are welcome! Contact me: arno dot trautmann at gmx dot de.
 %</readme>
 %<*internal>
 \fi
@@ -48,7 +52,7 @@ This work conists of this file alttex.dtx
 \nopostamble
 \generate{\file{sample.tex}{\from{alttex.dtx}{sample}}}
 \nopreamble
-\generate{\file{README}{\from{alttex.dtx}{readme}}}
+\generate{\file{readme.markdown}{\from{alttex.dtx}{readme}}}
 \endgroup
 %</internal>
 %
@@ -108,14 +112,13 @@ This work conists of this file alttex.dtx
   \setdeja\else
   \def\dejawarning{\footnotetext{\bf You do not have the font DejaVu Sans Mono installed. Get it from http://dejavu-fonts.org.\\ Your .sty file created will be fine, but in the pdf there will be some symbols missing.}}\fi
 
-
-
 \dejawarning
-This is the package |alttex| which will try to give an experimental new way to write \XeLaTeX{}\footnote{If you don’t know about \XeLaTeX, see the appendix.\ref{xelatex}} code. So far it is mostly done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
+This is the package |alttex| which will try to give an experimental new way to write \LaTeX{} code using the modern engines lua\TeX\ or \XeTeX. So far most of the code is done with very dirty code and actually it’s a collection of things that come into my mind during boring lectures. Maybe someone will have fun with the following code fragments.
 \tableofcontents
 \newpage
 \part{Introduction}
-The problem I have with \LaTeX\footnote{I’ll write \LaTeX{} instead of \XeLaTeX—saves me two keystrokes. Most of the code below \emph{only} works with \XeLaTeX. If you need support for [utf8]inputenc or Lua\LaTeX, please contact the author.}  is the antique way of typing. Because most people still use a hopelessly outdated keyboard layout (»qwerty« or slightly adapted versions of that), \LaTeX{} doesn’t make use of some cool features. I’m not talking about writing chinese or arabic text! Maybe this example will make the idea clear:
+\section{Why this package?}
+The problem I have with \LaTeX\footnote{I’ll write \LaTeX{} instead of \XeLaTeX\ or lua\LaTeX—saves me two resp. three keystrokes. Most of the code below \emph{only} works with \XeLaTeX. If you need support for [utf8]inputenc, please contact the author. Support for lua\LaTeX\ is work in progress.}  is the antique way of typing. Because most people still use a hopelessly outdated keyboard layout (»qwerty« or slightly adapted versions of that), \LaTeX{} doesn’t make use of some cool features. I’m not talking about writing chinese or arabic text, but something like the following example:
 
 In standard \LaTeX, one has to write
 \begin{verbatim}
@@ -130,22 +133,20 @@ This is the normal text, then comes the itemization:
 \end{itemize}
 \end{verbatim}
 
-Using this package and having a superior keyboard layout\footnote{E.\,g. the ergonomic layout Neo: \url{http://neo-layout.org/}}, you can simply write:\footnote{The lmodern font I’m using here does not have the symbol for the inner item , so we change to DejaVu Sans Mono here.}
+That is quite some code to write and is not very good readable. Of course, a good editor has a shortcut to save time at typing, but the code still looks more like programming than like typesetting. Using this package and having a superior keyboard layout\footnote{E.\,g. the ergonomic layout Neo: \url{http://neo-layout.org/}}, you can simply write this code and get exactly the same output:\footnote{The lmodern font I’m using here does not have the symbol for the inner item , so we change to DejaVu Sans Mono here. If you compiled this document on your computer without having DejaVu Sans Mono at hand, there might be some characters missing. Please consult the documentation online, then.}
 
 \begin{verbatim}
 This is the normal text, then comes the itemization:
 
 • text for first item
-• 
-
-  ‣ this is an item inside an item
-  ‣[⇒] Here an item with a formula: $∫_a^b x² dx$
+•  ‣ this is an itemize inside an item
+   ‣[⇒] Here an item with a formula: $∫_a^b x² dx$
   
 • and the outer itemize goes on…
 
 And your normal text goes on…
 \end{verbatim}
-Well, actually I’m lying now because this is not fully implemented so far. But it’s the aim of this package to provide this – besides many, many other funny and cool things. The aim is to offer a more „wysiwyg“ way, without loosing anything of logical markup. One still can re|\def|ine the |•| if he doesn’t like the way his items look.
+Well, actually I’m lying now because this is not fully implemented so far. But it’s the aim of this package to provide this – besides many, many other funny and cool things. The aim is to offer a more „wysiwyg“ way, without loosing anything of logical markup. One still can re|\def|ine the |•| if he doesn’t like the way his items look and so on. The above code is not meant to just typeset the character |•|, but this is rather a command itself to be there instead of the command |\item|.
 
 \StopEventually{}
 \clearpage
@@ -165,7 +166,7 @@ Well, actually I’m lying now because this is not fully implemented so far. But
 \ExplSyntaxOn
 \RequirePackage{amsmath}
 %    \end{macrocode}
-% Checking wether \XeTeX\ or Lua\TeX\ are used.
+% Checking wether \XeTeX\ or lua\TeX\ are used. (Not yet implemented, as we don’t make use of any lua\TeX-specific functionality so far. This will sure change in the future!)
 %    \begin{macrocode}
 %    \end{macrocode}
 % \begin{macro}{\usepackage}
@@ -209,7 +210,7 @@ Well, actually I’m lying now because this is not fully implemented so far. But
   \char_set_catcode:w`\%= 11
 }
 %    \end{macrocode}
-% The |\makeatletter| is not necessary. But it fitted into this line, so I will leave it here.
+% Changing |@| is not necessary here, but it fitted in nicely, so I leave it. Using lua\TeX, one would just call another catcode table instead of these manual changes.
 % \end{macro}
 % \begin{macro}{\oldescape}
 % Of course this has to be reset when doing anything like formula, tabular etc. Maybe I will be able to change the behaviour automatically. This idea has been inspired by a discussion on the Con\TeX{}t mailinglist.
@@ -329,6 +330,8 @@ Well, actually I’m lying now because this is not fully implemented so far. But
 % \end{environment}
 % 
 % \subsection{unicode math}
+% This section will soon be given up as there is the great unicode-math package by Will Robertson which does all the math stuff much more elaborate than it is hacked here. However, I let it stand for a while as unicode-math is under development.
+% 
 % Typing math in \TeX{} is no great fun – you have to write things like |\int| instead of |∫| and so on. Have a look at the following formula:
 % 
 % |\int_\infty^\infty \sum_a|
@@ -362,6 +365,13 @@ Well, actually I’m lying now because this is not fully implemented so far. But
   \altmath{β}\beta
   \altmath{γ}\gamma
   \altmath{δ}\delta
+  \altmath{ε}\varepsilon
+  \altmath{χ}\chi
+  \altmath{λ}\lambda
+  \altmath{μ}\mu
+  \altmath{π}\pi
+  \altmath{σ}\sigma
+  \altmath{ζ}\zeta
 
   \altmath{⇒}\Rightarrow
   \altmath{⇐}\Leftarrow
@@ -369,6 +379,8 @@ Well, actually I’m lying now because this is not fully implemented so far. But
 
   \altmath{∫}\int
   \altmath{∀}\forall
+  \altmath{∃}\exists
+  \altmath{∞}\infinity
 
   \altmath{₁}{_1}
   \altmath{₂}{_2}
@@ -382,7 +394,6 @@ Well, actually I’m lying now because this is not fully implemented so far. But
   \altmath{₀}{_0}
 }
 %    \end{macrocode}
-% There will be an |\makenormalmath|-switch as well.
 % \subsection{Lazy underscript and superscript}
 % \begin{macro}{_}
 % Sometimes one has to make extensive use of subscripts and superscripts, e.\,g. when typing long formulae including tensors. Then it is a bit annoying to always write the |{}|, especially when there are only two letters in the sub/superscript. So let’s try to implement the possibility to type |$F_μν F^μν $|.
@@ -445,7 +456,7 @@ This does not work so far…
 %   ⎝e & f⎠      ⎣f & g⎦      ⎪g & h⎪
 %                             ⎩i & j⎭
 % \end{verbatim}
-% and the result will be a |bmatrix|, a |pmatrix| or a |\right\{ matrix \end{matrix}|, respectively. As \TeX\ is assumed to read from left-top to right-bottom, the matrices must not stand in a line, i.\,e. the following notation is \emph{not} possible:
+% and the result will be a |bmatrix|, a |pmatrix| or a |\right\{ matrix \end{matrix}|, respectively. As \TeX\ is assumed to read from left-top to right-bottom, the matrices must not stand in a line, i.\,e. the following notation is \emph{not} (yet?) possible:
 % \begin{verbatim}
 %     ⎛a & b⎞
 % A = ⎜c & d⎟ = B
@@ -717,22 +728,10 @@ This does not work so far…
 % \item |\exceltabular| is broken.
 % \end{itemize}
 % \newpage\appendix
-% \section*{A very short introduction to \XeLaTeX}
-% \label{xelatex}
-  % Everything you have to know about \XeLaTeX\ to use this package: Write your \LaTeX\ file just as you are used to. But save it as utf8-encoded, and say
-% \begin{verbatim}\usepackage{xltxtra}\end{verbatim}
-% instead of 
-% \begin{verbatim}\usepackage[latin1]{inputenc} and \usepackage[T1]{fontenc}\end{verbatim}
-% 
-% This loads some files that provide all the cool stuff \XeLaTeX\ offers. You don’t have to take care of letters \TeX\ would not understand – \XeTeX\ understands every character you type. But sometimes the font may not have the symbol for this – then you can use |\fontspec{fontname}|, where |fontname| is the name of a font on your system, e.\,g. |Arno Pro|, |Linux Libertine|, |LT Zapfino One| etc.
-% 
-% Then, you compile your document with the command |xelatex file.tex|, instead of |latex file.tex| and you get a pdf as output. Mostly, your editor will not have a shortcut to start \XeLaTeX. In that case, you have to compile via the command line. If you know your editor well enough, you may be able to create a shortcut that will run |xelatex file.tex| for you. Notice that you will need an editor that is utf8-capable! One last warning: While \XeTeX\ is not an pdf\TeX\ successor, you cannot use microtypographic extensions. Maybe in the future there will be an implementation that uses advanced OpenType-features, but at the moment there is no microtypography possible!
-% 
-% If you have any trouble using \XeLaTeX, just e-mail me!
-% \newpage
 % \section*{todo}
 % Here a section with some ideas that could be implemented.
 % \begin{itemize}
+% \item Change |\usepackage| only with a given package-option to make it more robust.
 % \item Use |²| as square in mathmode and possibly |¹| as |\footnote|?
 % \item Do something to enable easy tabular
 % \item If there is only one char after an |_|, there should no space be needed.
